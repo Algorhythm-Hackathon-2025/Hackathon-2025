@@ -56,7 +56,7 @@ const Header = ({
     url: "https://www.shadcnblocks.com",
     src: "https://shadcnblocks.com/images/block/logos/shadcnblockscom-icon.svg",
     alt: "logo",
-    title: "Shadcnblocks.com",
+    title: "BaatarBeam",
   },
   menu = [
     { title: "Home", url: "#" },
