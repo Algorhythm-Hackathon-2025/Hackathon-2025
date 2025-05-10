@@ -22,6 +22,10 @@ const problemSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  coordinates: {
+    type: [Number],
+    required: true,
+  },
   difficulty: {
     type: String,
     enum: ["easy", "hard"],
@@ -36,7 +40,6 @@ const problemSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-
 });
 
 const Problem = mongoose.model("Problem", problemSchema);
