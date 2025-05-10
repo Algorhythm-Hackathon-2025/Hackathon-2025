@@ -11,6 +11,11 @@ const MENU_ITEMS = [
   { label: "Холбоо барих", key: "/contact" },
 ];
 
+const ADMIN_MENU_ITEMS = [
+  { label: "Нүүр", key: "/" },
+  { label: "Админ", key: "/admin" },
+];
+
 export default function PageLayout() {
   const { user, loading } = useUser();
   const location = useLocation();
@@ -20,7 +25,7 @@ export default function PageLayout() {
     return <Spin size="large" />;
   }
 
-  const profileItems = [
+  const profileItems = user && [
     {
       key: "/profile",
       label: "Профайл",
@@ -42,7 +47,7 @@ export default function PageLayout() {
         <Menu
           mode="horizontal"
           defaultSelectedKeys={[location?.pathname ?? ""]}
-          items={MENU_ITEMS}
+          items={!user?.isAdmin ? MENU_ITEMS : ADMIN_MENU_ITEMS}
           className="w-full flex items-center bg-transparent"
           onClick={(e) => navigate(e.key)}
         />
