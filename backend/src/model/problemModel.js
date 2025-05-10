@@ -22,6 +22,20 @@ const problemSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  coordinates: {
+    type: [Number],
+    required: true,
+  },
+  difficulty: {
+    type: String,
+    enum: ["easy", "hard"],
+    required: true,
+  },
+  takenBy: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Problem",
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

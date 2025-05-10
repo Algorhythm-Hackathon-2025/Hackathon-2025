@@ -1,6 +1,4 @@
 import e, { json } from "express";
-import mongoose from "mongoose";
-import cors from "cors";
 import dotenv from "dotenv";
 import errorHandler from "./error/handler.js";
 import { URLnotFound } from "./error/errors.js";
@@ -14,15 +12,9 @@ connectDB();
 const PORT = 3012;
 const app = e();
 
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-}));
-
 app.use(json());
 app.use(cookieParser());
 app.use("/api", apiRoutes);
-
 
 app.all("/{*any}", (req, _, next) => {
   next(URLnotFound(req.url));

@@ -8,8 +8,8 @@ export const getInfo = asyncHandler(async (req, res) => {
     throw new Error("User not authenticated");
   }
 
-  const { _id, number, username, role, createdAt } = req.user;
-  res.json({ _id, number, username, role, createdAt });
+  const { _id, number, username, isAdmin, createdAt, balance } = req.user;
+  res.json({ _id, number, username, isAdmin, createdAt, balance });
 });
 
 export const login = asyncHandler(async (req, res) => {
@@ -46,4 +46,9 @@ export const login = asyncHandler(async (req, res) => {
     console.log("Password does not match");
     return res.status(401).json({ message: "Invalid email or password" });
   }
+});
+
+export const logout = asyncHandler(async (req, res) => {
+  res.clearCookie("jwt");
+  res.json("OK");
 });

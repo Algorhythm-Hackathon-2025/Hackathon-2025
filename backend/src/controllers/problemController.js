@@ -1,7 +1,10 @@
 import Problem from "../model/problemModel.js";
+import User from "../model/users.js";
 
 export const createProblem = async (req, res) => {
-  const { title } = req.body;
+  const { title, difficulty, longitude, latitude } = req.body;
+
+  const coordinates = [parseFloat(longitude), parseFloat(latitude)];
 
   if (!title || req.files.length < 1) {
     return res
@@ -15,6 +18,8 @@ export const createProblem = async (req, res) => {
     user: req.user._id,
     title,
     images: imagePaths,
+    difficulty,
+    coordinates,
   });
 
   res.status(201).json(problem);
@@ -45,9 +50,8 @@ export const voteProblem = async (req, res) => {
     return res.status(404).json({ message: "Problem not found." });
   }
 
-  // Ensure votes is initialized
   if (!problem.votes) {
-    problem.votes = []; // Initialize if undefined
+    problem.votes = [];
   }
 
   if (problem.votes.includes(req.user._id)) {
@@ -66,12 +70,13 @@ export const getUserProblems = async (req, res) => {
   const problems = await Problem.find({ user: userId }).sort({ createdAt: -1 });
 
   if (!problems || problems.length === 0) {
-    return res.status(404).json({ message: "No problems found for this user." });
+    return res
+      .status(404)
+      .json({ message: "No problems found for this user." });
   }
 
   res.status(200).json(problems);
 };
-
 
 export const deleteProblem = async (req, res) => {
   const { id } = req.params;
@@ -82,7 +87,9 @@ export const deleteProblem = async (req, res) => {
   }
 
   if (problem.user.toString() !== req.user._id.toString()) {
-    return res.status(403).json({ message: "You are not authorized to delete this problem." });
+    return res
+      .status(403)
+      .json({ message: "You are not authorized to delete this problem." });
   }
 
   await problem.deleteOne();
@@ -97,4 +104,42 @@ export const getVoteCount = async (req, res) => {
     return res.status(404).json({ message: "Problem not found." });
   }
   res.status(200).json({ voteCount: problem.voteCount });
-}
+};
+
+export const takeEasyProblem = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user._id;
+
+  try {
+    const problem = await Problem.findById(id);
+    const worker = await User.findById(userId);
+
+    if (!problem || !worker) {
+      return res.status(404).json({ message: "Problem or user not found" });
+    }
+
+    if (problem.difficulty !== "easy") {
+      return res
+        .status(400)
+        .json({ message: "Only easy problems can be accepted" });
+    }
+
+    if (problem.takenBy) {
+      return res.status(400).json({ message: "Problem already taken" });
+    }
+
+    problem.takenBy = userId;
+    await problem.save();
+
+    const reward = 3000;
+    worker.balance += reward;
+    worker.takenProblems.push(problem._id);
+
+    await worker.save();
+
+    return res.status(200).json({ message: "Problem accepted", reward });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
