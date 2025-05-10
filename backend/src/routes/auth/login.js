@@ -1,12 +1,11 @@
 import express from "express";
 
 import {
-  login,
-  loginValidation,
+  login
 } from "#src/controllers/auth/userController.js";
 
 const router = express.Router();
 
-router.post("/", loginValidation, login);
+router.post("/", login);
 
 export default router;

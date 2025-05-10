@@ -5,35 +5,50 @@ import jwt from "jsonwebtoken";
 import { query } from "express-validator";
 
 export const getInfo = asyncHandler(async (req, res) => {
-  const { _id, email, firstName, lastName, age, createdAt, updatedAt } =
-    req.user;
-  res.json({ _id, email, firstName, lastName, age, createdAt, updatedAt });
+  if (!req.user) {
+    return res.status(401).json({ message: "User not authenticated" });
+  }
+
+  const { _id, number, username, role, createdAt } = req.user;
+  res.json({ _id, number, username, role, createdAt });
 });
 
-export const loginValidation = validateAll([
-  query("email").isEmail(),
-  query("password").isString(),
-]);
-
 export const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.query;
+  const { number, password } = req.body;
 
-  const user = await Users.findOne({ email });
+  console.log("Login attempt with number:", number);
+  console.log("Password provided:", password);
 
-  if (user && (await user.matchPassword(password))) {
-    const secret = process.env.JWT_SECRET;
-    if (!secret) throw new Error("JWT_SECRET not found");
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV !== "development",
-    });
-    res.json("OK");
-  } else {
-    res.status(401);
-    throw new Error("Invalid email or password");
+  try {
+    const user = await Users.findOne({ number });
+
+    if (!user) {
+      console.log("User not found");
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    if (
+      user &&
+      typeof user.matchPassword === "function" &&
+      (await user.matchPassword(password))
+    ) {
+      const secret = process.env.JWT_SECRET;
+      if (!secret) throw new Error("JWT_SECRET not found");
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV !== "development",
+      });
+      res.json("OK");
+    } else {
+      console.log("Password does not match");
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
