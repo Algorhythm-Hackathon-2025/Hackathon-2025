@@ -8,17 +8,19 @@ import {
   MapPin,
   Send,
 } from "lucide-react";
+import { App } from "antd";
 
-export default function CreateProblem({ className = "" }) {
-  const [images, setImages] = useState([]);
+export default function CreateProblem() {
+  const [images, setImages] = useState<{ file: File; url: string }[]>([]);
   const [caption, setCaption] = useState("");
   const [category, setCategory] = useState("pothole");
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState<{ lat: number; lng: number }>();
   const [difficulty, setDifficulty] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const { message } = App.useApp();
 
   // Check screen size on mount and when window is resized
   useEffect(() => {
@@ -38,47 +40,34 @@ export default function CreateProblem({ className = "" }) {
   const MAX_FILES = 10;
 
   const onDrop = useCallback(
-    (acceptedFiles) => {
+    (acceptedFiles: File[]) => {
       setErrorMessage("");
 
-      // Check file size
-      const oversizedFiles = acceptedFiles.filter(
-        (file) => file.size > MAX_FILE_SIZE
+      let validFiles = acceptedFiles.filter(
+        (file) => file.size <= MAX_FILE_SIZE
       );
-      if (oversizedFiles.length > 0) {
+      if (validFiles.length !== acceptedFiles.length) {
         setErrorMessage(`Some files exceed the 5MB limit and were not added.`);
-        const validFiles = acceptedFiles.filter(
-          (file) => file.size <= MAX_FILE_SIZE
-        );
         if (validFiles.length === 0) return;
-        acceptedFiles = validFiles;
       }
 
       // Check max number of files
-      if (images.length + acceptedFiles.length > MAX_FILES) {
+      if (images.length + validFiles.length > MAX_FILES) {
         setErrorMessage(
           `You can upload maximum ${MAX_FILES} images. Only the first ${
             MAX_FILES - images.length
           } will be added.`
         );
-        acceptedFiles = acceptedFiles.slice(0, MAX_FILES - images.length);
-        if (acceptedFiles.length === 0) return;
+        validFiles = validFiles.slice(0, MAX_FILES - images.length);
+        if (validFiles.length === 0) return;
       }
 
-      setImages((prevImages) => {
-        const newImages = [...prevImages];
-
-        acceptedFiles.forEach((file) => {
-          newImages.push({
-            file,
-            preview: URL.createObjectURL(file),
-          });
-        });
-
-        return newImages;
-      });
+      setImages([
+        ...images,
+        ...validFiles.map((file) => ({ file, url: URL.createObjectURL(file) })),
+      ]);
     },
-    [images.length]
+    [images]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -88,20 +77,9 @@ export default function CreateProblem({ className = "" }) {
     },
   });
 
-  const removeImage = (index) => {
-    setImages((prevImages) => {
-      const newImages = [...prevImages];
-      // Revoke the object URL to avoid memory leaks
-      URL.revokeObjectURL(newImages[index].preview);
-      newImages.splice(index, 1);
-
-      // Update current index if needed
-      if (currentImageIndex >= newImages.length && newImages.length > 0) {
-        setCurrentImageIndex(newImages.length - 1);
-      }
-
-      return newImages;
-    });
+  const removeImage = (index: number) => {
+    URL.revokeObjectURL(images[index].url);
+    setImages(images.filter((_, i) => i !== index));
   };
 
   const fetchLocation = () => {
@@ -162,7 +140,7 @@ export default function CreateProblem({ className = "" }) {
       formData.append("difficulty", difficulty); // Send difficulty level
       formData.append("coordinates", JSON.stringify(location)); // Send location as coordinates
       formData.append("category", category); // Send category
-      images.forEach((image, index) => {
+      images.forEach((image) => {
         formData.append("images", image.file);
       });
 
@@ -179,36 +157,29 @@ export default function CreateProblem({ className = "" }) {
       // Success
       setImages([]);
       setCaption("");
-      setLocation(null);
+      setLocation(undefined);
       setErrorMessage("");
-      alert("Your report was submitted successfully. Thank you!");
+      message.success("Your report was submitted successfully. Thank you!");
     } catch (error) {
-      setErrorMessage(error.message || "Failed to submit. Please try again.");
+      setErrorMessage(
+        (error as any).message || "Failed to submit. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const nextImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    setCurrentImageIndex(
+      currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1
     );
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    setCurrentImageIndex(
+      currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1
     );
   };
-
-  // Clean up object URLs when component unmounts
-  useEffect(() => {
-    return () => {
-      images.forEach((image) => {
-        URL.revokeObjectURL(image.preview);
-      });
-    };
-  }, []);
 
   return (
     <div
@@ -245,7 +216,7 @@ export default function CreateProblem({ className = "" }) {
           <div className="mb-4 relative">
             <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
               <img
-                src={images[currentImageIndex].preview}
+                src={images[currentImageIndex].url}
                 alt={`Preview ${currentImageIndex + 1}`}
                 className="w-full h-full object-contain"
               />

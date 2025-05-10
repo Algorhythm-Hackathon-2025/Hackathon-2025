@@ -92,9 +92,11 @@ export default function PageLayout() {
         ) : (
           <div className="flex gap-2">
             <Button type="primary" onClick={() => navigate("/login")}>
+              Нэвтрэх
+            </Button>
+            <Button type="default" onClick={() => navigate("/register")}>
               Бүртгүүлэх
             </Button>
-            <Button onClick={() => navigate("/register")}>Нэвтрэх</Button>
           </div>
         )}
       </Header>
