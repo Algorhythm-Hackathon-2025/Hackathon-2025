@@ -13,18 +13,17 @@ export default function PageLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   return (
-    <Layout style={{ width: "100vw", height: "100vh" }}>
-      <Header style={{ display: "flex", alignItems: "center" }}>
+    <Layout className="w-screen h-screen">
+      <Header className="flex items-center">
         <Menu
-          theme="dark"
           mode="horizontal"
           defaultSelectedKeys={[location?.pathname ?? ""]}
           items={MENU_ITEMS}
-          style={{ flex: 1, display: "flex", justifyContent: "center" }}
+          className="flex-1 flex items-center justify-center"
           onClick={(e) => navigate(e.key)}
         />
       </Header>
-      <Content>
+      <Content className="flex flex-col items-center">
         <Outlet />
       </Content>
     </Layout>

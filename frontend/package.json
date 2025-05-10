@@ -10,20 +10,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@radix-ui/react-label": "^2.1.6",
-    "@radix-ui/react-slot": "^1.2.2",
+    "@ant-design/cssinjs": "^1.23.0",
     "@tailwindcss/vite": "^4.1.6",
     "antd": "^5.25.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-router": "^7.6.0",
     "react-router-dom": "^7.6.0",
     "shadcn": "^2.5.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.25.0",
