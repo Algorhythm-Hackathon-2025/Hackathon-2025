@@ -2,7 +2,7 @@ import { StyleProvider } from "@ant-design/cssinjs";
 import { ConfigProvider, theme } from "antd";
 import { lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
-import LoginForm from "./components/auth/login-form";
+// import LoginForm from "./components/auth/login-form";
 
 const Home = lazy(() => import("./routes/home"));
 const About = lazy(() => import("./routes/about"));
