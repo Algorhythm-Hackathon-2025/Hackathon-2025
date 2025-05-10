@@ -1,22 +1,58 @@
 import React, { useState } from "react";
+import { useUser } from "../../providers/user-provider";
+import { useRequest } from "ahooks";
 
 interface ImageSliderProps {
   images: string[];
   title: string;
+  id: string;
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ images, title }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ images, title, id }) => {
+  const { user  } = useUser();
+  const isAdmin = user?.isAdmin ?? true;
   const [current, setCurrent] = useState(0);
+  const [voted, setVoted] = useState(false);
 
-  // Log images array to check its content
-  console.log(images); // Check the actual images array
 
-  const prev = () => setCurrent(current === 0 ? images.length - 1 : current - 1);
-  const next = () => setCurrent(current === images.length - 1 ? 0 : current + 1);
+  const prev = () =>
+    setCurrent(current === 0 ? images.length - 1 : current - 1);
+  const next = () =>
+    setCurrent(current === images.length - 1 ? 0 : current + 1);
+
+  const vote = async () => {
+    try {
+      const response = await fetch(`/api/problems/vote/${id}`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) throw new Error("Vote failed");
+
+      setVoted(true);
+      alert("Thanks for voting!");
+    } catch (error) {
+      console.error("Voting error:", error);
+      alert("Failed to vote. Try again.");
+    }
+  };
+
+  const { data: voteCount } = useRequest(async () => {
+    const response = await fetch(`/api/problems/voteCount/${id}`, {
+      method: "GET",
+      credentials: "include",
+    });
+    if (!response.ok) throw new Error("Failed to fetch votes");
+    const data = await response.json();
+    return data.voteCount;
+  });
 
   return (
+    
     <div style={{ width: "200px" }}>
-      <h4 style={{ fontWeight: "bold", marginBottom: "8px" }}>{title}</h4>
+      <h4 style={{ fontWeight: "bold", marginBottom: "8px", fontSize: "15px" }}>
+        {title}
+      </h4>
       <div style={{ position: "relative" }}>
         <img
           src={images[current]}
@@ -34,7 +70,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, title }) => {
               onClick={prev}
               style={{
                 position: "absolute",
-                left: 0,
+                left: -23,
                 top: "50%",
                 transform: "translateY(-50%)",
                 background: "#0008",
@@ -50,7 +86,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, title }) => {
               onClick={next}
               style={{
                 position: "absolute",
-                right: 0,
+                right: -23,
                 top: "50%",
                 transform: "translateY(-50%)",
                 background: "#0008",
@@ -65,6 +101,30 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, title }) => {
           </>
         )}
       </div>
+      {isAdmin ? (
+        <div style={{ marginTop: "8px",alignItems:"center", fontSize: "12px", color: "#555" }}>
+          <span>Votes: {voteCount ?? 0}</span> 
+
+        </div>
+      ) : (
+        <button
+          onClick={vote}
+          disabled={voted}
+          style={{
+            marginTop: "8px",
+            width: "100%",
+            padding: "6px",
+            backgroundColor: voted ? "#d3d3d3" : "#ADD8E6",
+            color: "#000",
+            border: "none",
+            borderRadius: "4px",
+            cursor: voted ? "not-allowed" : "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          {voted ? "Voted" : "Vote"}
+        </button>
+      )}
     </div>
   );
 };

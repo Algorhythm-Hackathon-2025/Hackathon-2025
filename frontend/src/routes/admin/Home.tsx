@@ -13,31 +13,31 @@ const MapComponent: React.FC = () => {
   const icons = {
     Streetlight: L.icon({
       iconUrl: "/customIcon/bulb.png",
-      iconSize: [25, 41],
+      iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
     Pothole: L.icon({
       iconUrl: "/customIcon/pothole.png",
-      iconSize: [25, 41],
+      iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
     Sidewalk: L.icon({
       iconUrl: "/customIcon/sidewalk.png",
-      iconSize: [25, 41],
+      iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
     Trash: L.icon({
       iconUrl: "/customIcon/waste.png",
-      iconSize: [25, 41],
+      iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
     Others: L.icon({
-      iconUrl: "/customIcon/other.jpg",
-      iconSize: [25, 41],
+      iconUrl: "/customIcon/others.png",
+      iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
@@ -67,7 +67,8 @@ const MapComponent: React.FC = () => {
 
             // Create an empty container for the popup content
             const popupDiv = document.createElement("div");
-
+            popupDiv.style.width = "210px";
+            popupDiv.style.padding = "8px";
             // Bind the empty container as the popup content.
             marker.bindPopup(popupDiv);
 
@@ -75,13 +76,14 @@ const MapComponent: React.FC = () => {
             marker.on("popupopen", () => {
               // Normalize image paths (convert backslashes to forward slashes and prefix with uploads folder)
               const normalizedImages = (images || []).map((img: string) =>
-                `http://localhost:3012/uploads/${img.replace(/\\/g, "/").split("/").pop()}`
+                `/api/uploads/${img.replace(/\\/g, "/").split("/").pop()}`
               );
-              
+
               
               if (!popupDiv.hasChildNodes()) {
                 const root = ReactDOM.createRoot(popupDiv);
-                root.render(<ImageSlider images={normalizedImages} title={title} />);
+                root.render(<ImageSlider images={normalizedImages} title={title} id={problem._id} />
+                );
               }
             });
           }

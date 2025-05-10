@@ -18,7 +18,7 @@ app.use(cors({origins: "localhost:5173"}));
 app.use(json());
 app.use(cookieParser());
 app.use("/api", apiRoutes);
-
+app.use("/api/uploads", e.static("uploads"));
 
 app.all("/{*any}", (req, _, next) => {
   next(URLnotFound(req.url));

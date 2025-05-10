@@ -12,7 +12,7 @@ const Login = lazy(() => import("./routes/login"));
 const Register = lazy(() => import("./routes/register"));
 
 const AdminHome = lazy(() => import("./routes/admin/Home"));
-
+const AdminList = lazy(() => import("./routes/admin/List"));
 function App() {
   const { user, loading } = useUser();
 
@@ -31,7 +31,10 @@ function App() {
             <Route path="/register" element={<Register />} />
           </>
         ) : (
-          <Route index element={<AdminHome/>} />
+          <>
+            <Route index element={<AdminHome />} />
+            <Route path="/admin" element={<AdminList />} />
+          </>
         )}
         <Route path="*" element={<NotFound />} />
       </Route>
