@@ -1,9 +1,10 @@
-import express from "express";
+import { Router } from "express";
 
 import { getInfo } from "../controllers/auth/userController.js";
+import authenticate from "../middlewares/authenticate.js";
 
-const router = express.Router();
+const router = Router();
 
-router.get("/profile", getInfo);
+router.get("/profile", authenticate, getInfo);
 
 export default router;
