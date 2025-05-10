@@ -10,21 +10,26 @@ const { Meta } = Card;
 
 interface PostProps {
   small?: boolean;
+  title?: string;
+  imageUrls?: string[];
 }
 
-const Post: React.FC<PostProps> = ({ small = false }) => {
+const Post: React.FC<PostProps> = ({
+  small = false,
+  title,
+  imageUrls = [],
+}) => {
   const [activeButton, setActiveButton] = useState<"up" | "down">("down");
 
   const handleButtonClick = (button: "up" | "down") => {
     setActiveButton(button);
   };
 
-  const imageUrls = [
+  const defaultImages = [
     "https://images.unsplash.com/photo-1605460375648-278bcbd579a6",
-    "https://images.unsplash.com/photo-1581291519195-ef11498d1cf5",
-    "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d",
   ];
-
+  const imageList = imageUrls.length > 0 ? imageUrls : defaultImages;
+  console.log("imageList", imageList);
   return (
     <Card
       style={{
@@ -33,7 +38,7 @@ const Post: React.FC<PostProps> = ({ small = false }) => {
       }}
       cover={
         <Carousel>
-          {imageUrls.map((url, idx) => (
+          {imageList.map((url, idx) => (
             <div key={idx}>
               <img
                 src={url}
@@ -52,7 +57,7 @@ const Post: React.FC<PostProps> = ({ small = false }) => {
       }
       actions={
         small
-          ? undefined // optionally hide actions for smaller card
+          ? undefined
           : [
               <button
                 key="up"
@@ -65,16 +70,6 @@ const Post: React.FC<PostProps> = ({ small = false }) => {
                   style={{ width: 24, height: 24 }}
                 />
               </button>,
-              // <button
-              //   key="comment"
-              //   style={{ border: "none", padding: "10px", cursor: "pointer" }}
-              // >
-              //   <img
-              //     src={Comment}
-              //     alt="Comment"
-              //     style={{ width: 28, height: 28 }}
-              //   />
-              // </button>,
               <button
                 key="down"
                 onClick={() => handleButtonClick("down")}
@@ -93,7 +88,7 @@ const Post: React.FC<PostProps> = ({ small = false }) => {
         avatar={
           <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />
         }
-        title={small ? "Short title" : "Card title"}
+        title={title || "Card title"}
         description={
           small
             ? "Short description"
