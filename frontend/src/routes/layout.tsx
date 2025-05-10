@@ -16,7 +16,6 @@ export default function PageLayout() {
     <Layout style={{ width: "100vw", height: "100vh" }}>
       <Header style={{ display: "flex", alignItems: "center" }}>
         <Menu
-          theme="dark"
           mode="horizontal"
           defaultSelectedKeys={[location?.pathname ?? ""]}
           items={MENU_ITEMS}
@@ -24,7 +23,14 @@ export default function PageLayout() {
           onClick={(e) => navigate(e.key)}
         />
       </Header>
-      <Content>
+      <Content
+        style={{
+          padding: "20px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <Outlet />
       </Content>
     </Layout>
