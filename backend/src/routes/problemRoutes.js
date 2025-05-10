@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post("/create", protect, upload.array("images", 3), createProblem);
+router.post("/create", protect, upload.array("images", 5), createProblem);
 router.get("/get", protect, getProblems);
 router.get("/get/:id", protect, getProblemById);
 router.post("/vote/:id", protect, voteProblem);

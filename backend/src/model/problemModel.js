@@ -16,13 +16,7 @@ const problemSchema = new mongoose.Schema({
   },
   categories: {
     type: String,
-    enum: [
-      "Streetlight",
-      "Sidewalk",
-      "Trash",
-      "Pothole",
-      "Others",
-    ],
+    enum: ["streetlight", "sidewalk", "trash", "pothole", "others"],
     required: true,
   },
   votes: {
