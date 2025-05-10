@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
+import LoginForm from "./components/auth/login-form";
 
 const Home = lazy(() => import("./routes/home"));
 const About = lazy(() => import("./routes/about"));
@@ -14,6 +15,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<LoginForm />} />
         </Route>
       </Routes>
     </BrowserRouter>
