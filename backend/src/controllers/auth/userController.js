@@ -7,15 +7,12 @@ export const getInfo = asyncHandler(async (req, res) => {
     return res.status(401).json({ message: "User not authenticated" });
   }
 
-  const { _id, number, username, role, createdAt, balance } = req.user;
-  res.json({ _id, number, username, role, createdAt, balance });
+  const { _id, number, username, isAdmin, createdAt, balance } = req.user;
+  res.json({ _id, number, username, isAdmin, createdAt, balance });
 });
 
 export const login = asyncHandler(async (req, res) => {
   const { number, password } = req.body;
-
-  console.log("Login attempt with number:", number);
-  console.log("Password provided:", password);
 
   try {
     const user = await Users.findOne({ number });

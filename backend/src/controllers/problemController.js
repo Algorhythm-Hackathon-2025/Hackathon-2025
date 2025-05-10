@@ -99,3 +99,37 @@ export const getVoteCount = async (req, res) => {
   }
   res.status(200).json({ voteCount: problem.voteCount });
 }
+
+export const getTakenBy = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.body.userId;
+
+  try {
+    const problem = await Problem.findById(id);
+    const worker = await User.findById(userId);
+
+    if (!problem || !worker) {
+      return res.status(404).json({ message: "Problem or user not found" });
+    }
+
+    if (problem.difficulty !== "easy") {
+      return res.status(400).json({ message: "Only easy problems can be accepted" });
+    }
+
+    if (problem.takenBy) {
+      return res.status(400).json({ message: "Problem already taken" });
+    }
+
+    problem.takenBy = userId;
+    await problem.save();
+
+    const reward = 3000; 
+    worker.balance += reward;
+    await worker.save();
+
+    return res.status(200).json({ message: "Problem accepted", reward });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+}

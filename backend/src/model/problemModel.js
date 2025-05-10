@@ -27,7 +27,11 @@ const problemSchema = new mongoose.Schema({
     enum: ["easy", "hard"],
     required: true,
   },
-
+  takenBy: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
