@@ -8,18 +8,21 @@ import {
   MapPin,
   Send,
 } from "lucide-react";
+import { App } from "antd";
 
-export default function Contact({ className = "" }) {
-  const [images, setImages] = useState([]);
+export default function CreateProblem() {
+  const [images, setImages] = useState<{ file: File; url: string }[]>([]);
   const [caption, setCaption] = useState("");
   const [category, setCategory] = useState("pothole");
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState<{ lat: number; lng: number }>();
   const [difficulty, setDifficulty] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const { message } = App.useApp();
 
+  // Check screen size on mount and when window is resized
   useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -33,51 +36,38 @@ export default function Contact({ className = "" }) {
 
   // Max file size: 5MB
   const MAX_FILE_SIZE = 5 * 1024 * 1024;
-  // Max number of images: 10
+  // Max number of images: 5
   const MAX_FILES = 10;
 
   const onDrop = useCallback(
-    (acceptedFiles) => {
+    (acceptedFiles: File[]) => {
       setErrorMessage("");
 
-      // Check file size
-      const oversizedFiles = acceptedFiles.filter(
-        (file) => file.size > MAX_FILE_SIZE
+      let validFiles = acceptedFiles.filter(
+        (file) => file.size <= MAX_FILE_SIZE
       );
-      if (oversizedFiles.length > 0) {
+      if (validFiles.length !== acceptedFiles.length) {
         setErrorMessage(`Some files exceed the 5MB limit and were not added.`);
-        const validFiles = acceptedFiles.filter(
-          (file) => file.size <= MAX_FILE_SIZE
-        );
         if (validFiles.length === 0) return;
-        acceptedFiles = validFiles;
       }
 
       // Check max number of files
-      if (images.length + acceptedFiles.length > MAX_FILES) {
+      if (images.length + validFiles.length > MAX_FILES) {
         setErrorMessage(
           `You can upload maximum ${MAX_FILES} images. Only the first ${
             MAX_FILES - images.length
           } will be added.`
         );
-        acceptedFiles = acceptedFiles.slice(0, MAX_FILES - images.length);
-        if (acceptedFiles.length === 0) return;
+        validFiles = validFiles.slice(0, MAX_FILES - images.length);
+        if (validFiles.length === 0) return;
       }
 
-      setImages((prevImages) => {
-        const newImages = [...prevImages];
-
-        acceptedFiles.forEach((file) => {
-          newImages.push({
-            file,
-            preview: URL.createObjectURL(file),
-          });
-        });
-
-        return newImages;
-      });
+      setImages([
+        ...images,
+        ...validFiles.map((file) => ({ file, url: URL.createObjectURL(file) })),
+      ]);
     },
-    [images.length]
+    [images]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -87,20 +77,9 @@ export default function Contact({ className = "" }) {
     },
   });
 
-  const removeImage = (index) => {
-    setImages((prevImages) => {
-      const newImages = [...prevImages];
-      // Revoke the object URL to avoid memory leaks
-      URL.revokeObjectURL(newImages[index].preview);
-      newImages.splice(index, 1);
-
-      // Update current index if needed
-      if (currentImageIndex >= newImages.length && newImages.length > 0) {
-        setCurrentImageIndex(newImages.length - 1);
-      }
-
-      return newImages;
-    });
+  const removeImage = (index: number) => {
+    URL.revokeObjectURL(images[index].url);
+    setImages(images.filter((_, i) => i !== index));
   };
 
   const fetchLocation = () => {
@@ -157,17 +136,15 @@ export default function Contact({ className = "" }) {
 
     try {
       const formData = new FormData();
-      formData.append("title", caption);
-      formData.append("difficulty", difficulty);
-      formData.append("coordinates", JSON.stringify(location));
-      formData.append("category", category);
-      images.forEach((image, index) => {
+      formData.append("title", caption); // Send caption as title
+      formData.append("difficulty", difficulty); // Send difficulty level
+      formData.append("coordinates", JSON.stringify(location)); // Send location as coordinates
+      formData.append("category", category); // Send category
+      images.forEach((image) => {
         formData.append("images", image.file);
       });
 
-      console.log(formData);
-
-      const response = await fetch("/api/problems/create", {
+      const response = await fetch("/api/problems", {
         method: "POST",
         body: formData,
       });
@@ -180,45 +157,38 @@ export default function Contact({ className = "" }) {
       // Success
       setImages([]);
       setCaption("");
-      setLocation(null);
+      setLocation(undefined);
       setErrorMessage("");
-      alert("Your report was submitted successfully. Thank you!");
+      message.success("Your report was submitted successfully. Thank you!");
     } catch (error) {
-      setErrorMessage(error.message || "Failed to submit. Please try again.");
+      setErrorMessage(
+        (error as any).message || "Failed to submit. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const nextImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    setCurrentImageIndex(
+      currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1
     );
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    setCurrentImageIndex(
+      currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1
     );
   };
 
-  // Clean up object URLs when component unmounts
-  useEffect(() => {
-    return () => {
-      images.forEach((image) => {
-        URL.revokeObjectURL(image.preview);
-      });
-    };
-  }, []);
-
   return (
     <div
-      className={` bg-[#23252d] rounded-lg shadow-lg ${
+      className={`bg-white rounded-lg shadow-lg ${
         isMobile ? "w-full" : "w-96"
       } sticky top-4 right-4 z-10 max-h-[calc(100vh-2rem)] overflow-y-auto flex flex-col h-auto`}
     >
-      <div className="p-4 bg-blue-900 text-white rounded-t-lg ">
-        <h2 className="text-lg font-semibold">Асуудал мэдээллэх</h2>
+      <div className="p-4 bg-blue-600 text-white rounded-t-lg">
+        <h2 className="text-lg font-semibold">Report a Problem</h2>
       </div>
 
       <div className="p-4 flex-grow">
@@ -231,13 +201,13 @@ export default function Contact({ className = "" }) {
         >
           <input {...getInputProps()} />
           <div className="flex flex-col items-center justify-center text-center">
-            <Camera className="w-8 h-8 text-white mb-2" />
-            <p className="text-sm text-white">
+            <Camera className="w-8 h-8 text-gray-400 mb-2" />
+            <p className="text-sm text-gray-500">
               {isDragActive
                 ? "Drop the images here..."
                 : "Drag & drop images here, or click to select"}
             </p>
-            <p className="text-xs text-white mt-1">Max 10 images, 5MB each</p>
+            <p className="text-xs text-gray-400 mt-1">Max 5 images, 5MB each</p>
           </div>
         </div>
 
@@ -246,7 +216,7 @@ export default function Contact({ className = "" }) {
           <div className="mb-4 relative">
             <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
               <img
-                src={images[currentImageIndex].preview}
+                src={images[currentImageIndex].url}
                 alt={`Preview ${currentImageIndex + 1}`}
                 className="w-full h-full object-contain"
               />
@@ -305,31 +275,21 @@ export default function Contact({ className = "" }) {
         <div className="mb-4">
           <label
             htmlFor="category"
-            className="block text-sm font-medium text-white mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Төрөл
+            Category
           </label>
           <select
             id="category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full p-2 border text-white border-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-2 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option className="text-black" value="pothole">
-              Pothole
-            </option>
-            <option className="text-black" value="street_light">
-              Street Light Issue
-            </option>
-            <option className="text-black" value="trash">
-              Trash
-            </option>
-            <option className="text-black" value="sidewalk">
-              Damaged Sidewalk
-            </option>
-            <option className="text-black" value="other">
-              Others
-            </option>
+            <option value="pothole">Pothole</option>
+            <option value="street_light">Street Light Issue</option>
+            <option value="trash">Trash</option>
+            <option value="sidewalk">Damaged Sidewalk</option>
+            <option value="other">Others</option>
           </select>
         </div>
 
@@ -337,25 +297,20 @@ export default function Contact({ className = "" }) {
         <div className="mb-4">
           <label
             htmlFor="difficulty"
-            className="block text-sm font-medium text-white mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Хэр хэцүү асуудал вэ?
+            Difficulty Level
           </label>
           <select
             id="difficulty"
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
-            className="w-full p-2 border text-white border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-2 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <option className="text-black" value="">
-              Select Difficulty
-            </option>
-            <option className="text-black" value="easy">
-              Easy
-            </option>
-            <option className="text-black" value="hard">
-              Hard
-            </option>
+            <option value="">Select Difficulty</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
           </select>
         </div>
 
@@ -363,16 +318,16 @@ export default function Contact({ className = "" }) {
         <div className="mb-4">
           <label
             htmlFor="description"
-            className="block text-sm font-medium text-white mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Тайлбар
+            Description
           </label>
           <textarea
             id="title"
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
             placeholder="Describe the problem..."
-            className="w-full p-2 border bg-white text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             rows={3}
           />
         </div>
@@ -384,7 +339,7 @@ export default function Contact({ className = "" }) {
             className="w-full flex items-center justify-center bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
           >
             <MapPin className="mr-2" size={18} />
-            {location ? "Байршил бүртгэгдлээ" : "Байршил оруулах"}
+            {location ? "Location Added" : "Add Current Location"}
           </button>
           {location && (
             <p className="text-xs text-gray-500 mt-1 text-center">
@@ -406,12 +361,12 @@ export default function Contact({ className = "" }) {
           disabled={isSubmitting}
           className={`w-full flex items-center justify-center py-3 px-4 rounded-lg text-white ${
             isSubmitting
-              ? "bg-blue-800 cursor-not-allowed"
-              : "bg-blue-800 hover:bg-blue-700"
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
           } transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mb-2`}
         >
           <Send className="mr-2" size={18} />
-          {isSubmitting ? "Илгээж байна..." : "Илгээх "}
+          {isSubmitting ? "Submitting..." : "Submit Report"}
         </button>
       </div>
     </div>
