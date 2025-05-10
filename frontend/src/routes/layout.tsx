@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from "react-router";
 import { Layout, Menu } from "antd";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 
 const MENU_ITEMS = [
   { label: "Home", key: "/" },
