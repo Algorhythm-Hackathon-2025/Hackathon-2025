@@ -1,21 +1,18 @@
 import asyncHandler from "#src/middlewares/asyncHandler.js";
+import validateAll from "#src/middlewares/validateAll.js";
 import Users from "../../model/users.js";
-import bcrypt from "bcrypt"; 
-import { body, validationResult } from "express-validator"; 
+import bcrypt from "bcrypt";
+import { body } from "express-validator";
 
-export const signupValidation = [
+// Validation middleware
+export const signupValidation = validateAll([
   body("username").isString().notEmpty(),
-  body("number").isNumeric().notEmpty(),
+  body("number").isString().notEmpty(),
   body("password").isString().isLength({ min: 6 }),
-];
+]);
 
 export const signup = asyncHandler(async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  const { username, number, password} = req.body;
+  const { username, number, password } = req.body;
 
   const existingUser = await Users.findOne({ username });
   if (existingUser) {

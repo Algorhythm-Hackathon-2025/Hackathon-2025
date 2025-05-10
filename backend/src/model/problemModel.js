@@ -14,6 +14,17 @@ const problemSchema = new mongoose.Schema({
     type: [String],
     required: true,
   },
+  categories: {
+    type: String,
+    enum: [
+      "Streetlight",
+      "Sidewalk",
+      "Trash",
+      "Pothole",
+      "Others",
+    ],
+    required: true,
+  },
   votes: {
     type: [mongoose.Schema.Types.ObjectId],
     default: [],
@@ -21,6 +32,10 @@ const problemSchema = new mongoose.Schema({
   voteCount: {
     type: Number,
     default: 0,
+  },
+  coordinates: {
+    type: [Number],
+    required: true,
   },
   difficulty: {
     type: String,
@@ -36,7 +51,6 @@ const problemSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-
 });
 
 const Problem = mongoose.model("Problem", problemSchema);
