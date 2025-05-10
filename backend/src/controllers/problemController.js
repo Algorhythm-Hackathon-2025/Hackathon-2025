@@ -2,7 +2,7 @@ import Problem from "../model/problemModel.js";
 import User from "../model/users.js";
 
 export const createProblem = async (req, res) => {
-  const { title, difficulty, longitude, latitude } = req.body;
+  const { title, difficulty, longitude, latitude, categories } = req.body;
 
   const coordinates = [parseFloat(longitude), parseFloat(latitude)];
 
@@ -20,6 +20,7 @@ export const createProblem = async (req, res) => {
     images: imagePaths,
     difficulty,
     coordinates,
+    categories,
   });
 
   res.status(201).json(problem);
