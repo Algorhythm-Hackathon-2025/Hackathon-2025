@@ -10,6 +10,17 @@ const MENU_ITEMS = [
   { label: "Холбоо барих", key: "/contact" },
 ];
 
+const PROFILE_ITEMS = [
+  {
+    key: "/profile",
+    label: "Профайл",
+  },
+  {
+    key: "/logout",
+    label: "Гарах",
+  },
+];
+
 export default function PageLayout() {
   const { user, loading } = useUser();
   const location = useLocation();
@@ -18,6 +29,11 @@ export default function PageLayout() {
   if (loading) {
     return <Spin size="large" />;
   }
+
+  const profileItems = PROFILE_ITEMS.map((item) => ({
+    ...item,
+    onClick: () => navigate(item.key),
+  }));
 
   return (
     <Layout className="w-screen h-screen">
@@ -30,7 +46,7 @@ export default function PageLayout() {
           onClick={(e) => navigate(e.key)}
         />
         {user ? (
-          <Dropdown>
+          <Dropdown menu={{ items: profileItems }} trigger={["click"]}>
             <Button type="text" icon={<Avatar srcSet={user.username} />}>
               {user.username}
             </Button>
