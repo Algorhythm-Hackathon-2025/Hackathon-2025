@@ -1,14 +1,14 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import {
+  Camera,
   ChevronLeft,
   ChevronRight,
-  Camera,
-  X,
   MapPin,
   Send,
+  X,
 } from "lucide-react";
-import { App } from "antd";
+import { App, Button, Card, Input, Select, Typography } from "antd";
 
 export default function CreateProblem() {
   const [images, setImages] = useState<{ file: File; url: string }[]>([]);
@@ -18,21 +18,9 @@ export default function CreateProblem() {
   const [difficulty, setDifficulty] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [geoLoading, setGeoLoading] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
   const { message } = App.useApp();
-
-  // Check screen size on mount and when window is resized
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-
-    return () => window.removeEventListener("resize", checkScreenSize);
-  }, []);
 
   // Max file size: 5MB
   const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -84,6 +72,7 @@ export default function CreateProblem() {
 
   const fetchLocation = () => {
     if (navigator.geolocation) {
+      setGeoLoading(true);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLocation({
@@ -91,12 +80,14 @@ export default function CreateProblem() {
             lng: position.coords.longitude,
           });
           setErrorMessage("");
+          setGeoLoading(false);
         },
         (error) => {
           console.error("Error fetching location:", error);
           setErrorMessage(
             "Unable to fetch location. Please try again or enter manually."
           );
+          setGeoLoading(false);
         }
       );
     } else {
@@ -185,16 +176,10 @@ export default function CreateProblem() {
 
   return (
     <div className="flex-grow flex items-center">
-      <div
-        className={`bg-white rounded-lg shadow-lg ${
-          isMobile ? "w-full" : "w-96"
-        } sticky top-4 right-4 z-10 max-h-[calc(100vh-2rem)] overflow-y-auto flex flex-col h-auto`}
-      >
-        <div className="p-4 bg-blue-600 text-white rounded-t-lg">
-          <h2 className="text-lg font-semibold">Report a Problem</h2>
-        </div>
+      <Card>
+        <Typography.Title level={3}>Report a problem</Typography.Title>
 
-        <div className="p-4 flex-grow">
+        <div className="flex flex-col gap-4">
           {/* Image Upload Area */}
           <div
             {...getRootProps()}
@@ -218,12 +203,12 @@ export default function CreateProblem() {
 
           {/* Image Preview Carousel */}
           {images.length > 0 && (
-            <div className="mb-4 relative">
+            <div className="relative">
               <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
                 <img
                   src={images[currentImageIndex].url}
                   alt={`Preview ${currentImageIndex + 1}`}
-                  className="w-full h-full object-contain"
+                  className="max-w-[400px] w-full h-full object-contain"
                 />
                 <button
                   onClick={(e) => {
@@ -276,104 +261,83 @@ export default function CreateProblem() {
             </div>
           )}
 
-          {/* Problem Category */}
-          <div className="mb-4">
-            <label
-              htmlFor="category"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Category
-            </label>
-            <select
+          <div>
+            <label htmlFor="category">Category</label>
+            <Select
               id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full p-2 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="pothole">Pothole</option>
-              <option value="streetlight">Street Light Issue</option>
-              <option value="trash">Trash</option>
-              <option value="sidewalk">Damaged Sidewalk</option>
-              <option value="other">Others</option>
-            </select>
+              className="w-full"
+              onChange={setCategory}
+              placeholder="Select Category"
+              options={[
+                { value: "pothole", label: "Pothole" },
+                { value: "streetlight", label: "Street Light Issue" },
+                { value: "trash", label: "Trash" },
+                { value: "sidewalk", label: "Damaged Sidewalk" },
+                { value: "other", label: "Others" },
+              ]}
+            />
           </div>
-
-          {/* Difficulty Level */}
-          <div className="mb-4">
-            <label
-              htmlFor="difficulty"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Difficulty Level
-            </label>
-            <select
+          <div>
+            <label htmlFor="difficulty">Difficulty</label>
+            <Select
               id="difficulty"
-              value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value)}
-              className="w-full p-2 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Select Difficulty</option>
-              <option value="easy">Easy</option>
-              <option value="hard">Hard</option>
-            </select>
+              className="w-full"
+              onChange={setDifficulty}
+              placeholder="Select Difficulty"
+              options={[
+                { value: "easy", label: "Easy" },
+                { value: "hard", label: "Hard" },
+              ]}
+            />
           </div>
-
-          {/* Description Input */}
-          <div className="mb-4">
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Description
-            </label>
-            <textarea
-              id="title"
+          <div>
+            <label htmlFor="description">Description</label>
+            <Input.TextArea
+              id="description"
               value={caption}
-              onChange={(e) => setCaption(e.target.value)}
+              onChange={(e) => setCaption(e.currentTarget.value)}
               placeholder="Describe the problem..."
-              className="w-full p-2 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2"
               rows={3}
             />
           </div>
-
           {/* Location */}
           <div className="mb-4">
-            <button
+            <Button
               onClick={fetchLocation}
-              className="w-full flex items-center justify-center bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              icon={<MapPin size={20} />}
+              loading={geoLoading}
+              className="w-full bg-green-500 hover:bg-green-600"
+              type="primary"
+              size="large"
             >
-              <MapPin className="mr-2" size={18} />
               {location ? "Location Added" : "Add Current Location"}
-            </button>
+            </Button>
             {location && (
               <p className="text-xs text-gray-500 mt-1 text-center">
                 Lat: {location.lat.toFixed(6)}, Lng: {location.lng.toFixed(6)}
               </p>
             )}
           </div>
-
           {/* Error Message */}
           {errorMessage && (
             <div className="mb-4 p-2 bg-red-50 text-red-700 text-sm rounded-lg">
               {errorMessage}
             </div>
           )}
-
           {/* Submit Button */}
-          <button
+          <Button
             onClick={handleSubmit}
-            disabled={isSubmitting}
-            className={`w-full flex items-center justify-center py-3 px-4 rounded-lg text-white ${
-              isSubmitting
-                ? "bg-blue-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
-            } transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mb-2`}
+            loading={isSubmitting}
+            className="w-full"
+            type="primary"
+            size="large"
+            icon={<Send size={20} />}
           >
-            <Send className="mr-2" size={18} />
             {isSubmitting ? "Submitting..." : "Submit Report"}
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
