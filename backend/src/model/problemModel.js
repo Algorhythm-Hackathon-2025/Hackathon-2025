@@ -14,6 +14,17 @@ const problemSchema = new mongoose.Schema({
     type: [String],
     required: true,
   },
+  categories: {
+    type: String,
+    enum: [
+      "Streetlight",
+      "Sidewalk",
+      "Trash",
+      "Pothole",
+      "Others",
+    ],
+    required: true,
+  },
   votes: {
     type: [mongoose.Schema.Types.ObjectId],
     default: [],
