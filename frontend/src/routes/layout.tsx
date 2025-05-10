@@ -1,6 +1,7 @@
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { Avatar, Button, Dropdown, Layout, Menu, Spin } from "antd";
 import { useUser } from "../providers/user-provider";
+import { logout } from "../api/user/auth";
 
 const { Header, Content } = Layout;
 
@@ -8,17 +9,6 @@ const MENU_ITEMS = [
   { label: "Нүүр", key: "/" },
   { label: "Бидний тухай", key: "/about" },
   { label: "Холбоо барих", key: "/contact" },
-];
-
-const PROFILE_ITEMS = [
-  {
-    key: "/profile",
-    label: "Профайл",
-  },
-  {
-    key: "/logout",
-    label: "Гарах",
-  },
 ];
 
 export default function PageLayout() {
@@ -30,10 +20,21 @@ export default function PageLayout() {
     return <Spin size="large" />;
   }
 
-  const profileItems = PROFILE_ITEMS.map((item) => ({
-    ...item,
-    onClick: () => navigate(item.key),
-  }));
+  const profileItems = [
+    {
+      key: "/profile",
+      label: "Профайл",
+      onClick: () => navigate("/profile"),
+    },
+    {
+      key: "/logout",
+      label: "Гарах",
+      onClick: async () => {
+        await logout();
+        navigate("/login");
+      },
+    },
+  ];
 
   return (
     <Layout className="w-screen h-screen">
