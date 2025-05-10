@@ -28,3 +28,6 @@ export async function register({
   });
   await login({ number, password });
 }
+export async function logout() {
+  await apiPOST("/api/auth/logout");
+}

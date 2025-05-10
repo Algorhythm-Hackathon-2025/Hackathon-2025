@@ -13,6 +13,7 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import { useUser } from "../providers/user-provider";
+import { logout } from "../api/user/auth";
 
 const { Header } = Layout;
 
@@ -50,6 +51,22 @@ export default function PageLayout() {
       />
     );
   }
+
+  const profileItems = user && [
+    {
+      key: "/profile",
+      label: "Профайл",
+      onClick: () => navigate("/profile"),
+    },
+    {
+      key: "/logout",
+      label: "Гарах",
+      onClick: async () => {
+        await logout();
+        navigate("/login");
+      },
+    },
+  ];
 
   return (
     <div className="flex flex-col h-screen w-screen bg-[#23252d] text-white">
