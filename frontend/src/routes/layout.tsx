@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import { Layout, Menu } from "antd";
 
 const { Header, Content } = Layout;
@@ -11,6 +11,7 @@ const MENU_ITEMS = [
 
 export default function PageLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   return (
     <Layout style={{ width: "100vw", height: "100vh" }}>
       <Header style={{ display: "flex", alignItems: "center" }}>
@@ -19,7 +20,8 @@ export default function PageLayout() {
           mode="horizontal"
           defaultSelectedKeys={[location?.pathname ?? ""]}
           items={MENU_ITEMS}
-          className="flex-1 min-w-0"
+          style={{ flex: 1, display: "flex", justifyContent: "center" }}
+          onClick={(e) => navigate(e.key)}
         />
       </Header>
       <Content>
