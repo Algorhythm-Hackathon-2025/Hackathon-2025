@@ -1,5 +1,5 @@
 import Problem from "../model/problemModel.js";
-
+import User from "../model/users.js";
 export const createProblem = async (req, res) => {
   const { title , difficulty} = req.body;
 
@@ -46,9 +46,8 @@ export const voteProblem = async (req, res) => {
     return res.status(404).json({ message: "Problem not found." });
   }
 
-  // Ensure votes is initialized
   if (!problem.votes) {
-    problem.votes = []; // Initialize if undefined
+    problem.votes = []; 
   }
 
   if (problem.votes.includes(req.user._id)) {
@@ -100,14 +99,14 @@ export const getVoteCount = async (req, res) => {
   res.status(200).json({ voteCount: problem.voteCount });
 }
 
-export const getTakenBy = async (req, res) => {
+export const takeEasyProblem = async (req, res) => {
   const { id } = req.params;
-  const userId = req.body.userId;
+  const userId = req.user._id;
 
   try {
     const problem = await Problem.findById(id);
     const worker = await User.findById(userId);
-
+    
     if (!problem || !worker) {
       return res.status(404).json({ message: "Problem or user not found" });
     }
@@ -125,6 +124,8 @@ export const getTakenBy = async (req, res) => {
 
     const reward = 3000; 
     worker.balance += reward;
+    worker.takenProblems.push(problem._id);
+
     await worker.save();
 
     return res.status(200).json({ message: "Problem accepted", reward });
@@ -132,4 +133,4 @@ export const getTakenBy = async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
   }
-}
+};

@@ -8,6 +8,7 @@ import {
   getUserProblems,
   deleteProblem,
   getVoteCount,
+  takeEasyProblem,
 } from "../controllers/problemController.js";
 import protect from "../middlewares/authenticate.js";
 
@@ -31,5 +32,5 @@ router.post("/vote/:id", protect, voteProblem);
 router.get("/user", protect, getUserProblems);
 router.delete("/delete/:id", protect, deleteProblem);
 router.get("/voteCount/:id", protect, getVoteCount);
-
+router.post("/take/:id", protect, takeEasyProblem);
 export default router;

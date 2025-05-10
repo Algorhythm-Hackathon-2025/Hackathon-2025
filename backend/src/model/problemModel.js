@@ -29,7 +29,7 @@ const problemSchema = new mongoose.Schema({
   },
   takenBy: {
     type: [mongoose.Schema.Types.ObjectId],
-    ref: "User",
+    ref: "Problem",
     default: null,
   },
   createdAt: {

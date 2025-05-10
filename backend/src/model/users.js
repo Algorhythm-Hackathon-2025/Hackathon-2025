@@ -20,6 +20,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  takenProblems: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Problem",
+    },
+  ],
   balance: {
     type: Number,
     default: 100000,
