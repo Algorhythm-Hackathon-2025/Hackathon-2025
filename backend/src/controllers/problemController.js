@@ -1,7 +1,7 @@
 import Problem from "../model/problemModel.js";
 
 export const createProblem = async (req, res) => {
-  const { title } = req.body;
+  const { title , difficulty} = req.body;
 
   if (!title || req.files.length < 1) {
     return res
@@ -15,6 +15,7 @@ export const createProblem = async (req, res) => {
     user: req.user._id,
     title,
     images: imagePaths,
+    difficulty,
   });
 
   res.status(201).json(problem);

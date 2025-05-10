@@ -1,16 +1,14 @@
 import Users from "#src/model/users.js";
-import validateAll from "#src/middlewares/validateAll.js";
 import asyncHandler from "#src/middlewares/asyncHandler.js";
 import jwt from "jsonwebtoken";
-import { query } from "express-validator";
 
 export const getInfo = asyncHandler(async (req, res) => {
   if (!req.user) {
     return res.status(401).json({ message: "User not authenticated" });
   }
 
-  const { _id, number, username, role, createdAt } = req.user;
-  res.json({ _id, number, username, role, createdAt });
+  const { _id, number, username, role, createdAt, balance } = req.user;
+  res.json({ _id, number, username, role, createdAt, balance });
 });
 
 export const login = asyncHandler(async (req, res) => {

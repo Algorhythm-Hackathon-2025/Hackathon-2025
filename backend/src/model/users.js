@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "admin", "worker"],
     default: "user",
   },
+  balance: {
+    type: Number,
+    default: 100000,
+  },
+  
   createdAt: {
     type: Date,
     default: Date.now,

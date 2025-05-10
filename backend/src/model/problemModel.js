@@ -22,10 +22,17 @@ const problemSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  difficulty: {
+    type: String,
+    enum: ["easy", "hard"],
+    required: true,
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,
   },
+
 });
 
 const Problem = mongoose.model("Problem", problemSchema);
