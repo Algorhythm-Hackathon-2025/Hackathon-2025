@@ -1,5 +1,5 @@
-import { Button } from "./button";
-import road from "../../../public/img/road.jpg";
+// import { Button } from "./button";
+import road from "/img/road.jpg";
 
 const Hero = () => {
   return (

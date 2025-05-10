@@ -1,11 +1,11 @@
-import Post from "/-";
-export default function Post() {
+import { Post } from "../components/ui/post";
+// import Sidebar from "../components/ui/sidebar";
+export default function Home() {
   return (
-    <div className="w-screen bg-[#23252d]">
-      <div className="flex flex-col items-center">
-        <div className="w-3/4 mt-10">
-          <Post />
-        </div>
+    <div className="flex flex-row">
+      <div className="flex justify-center items-center flex-col w-full bg-[#23252d]">
+        <h1 className="text-3xl font-bold mb-6">Recent Reports</h1>
+        <Post />
       </div>
     </div>
   );

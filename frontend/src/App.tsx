@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router";
 import NotFound from "./routes/not-found";
 
 const Home = lazy(() => import("./routes/home"));
-const About = lazy(() => import("./routes/about"));
+const About = lazy(() => import("./routes/post"));
 const Contact = lazy(() => import("./routes/contact"));
 const DefaultLayout = lazy(() => import("./routes/layout"));
 const Login = lazy(() => import("./routes/login"));
