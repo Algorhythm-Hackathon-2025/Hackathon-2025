@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useUser } from "../../providers/user-provider";
+import React, { useState, useEffect } from "react";
 import { useRequest } from "ahooks";
 
 interface ImageSliderProps {
@@ -9,16 +8,52 @@ interface ImageSliderProps {
 }
 
 const ImageSlider: React.FC<ImageSliderProps> = ({ images, title, id }) => {
-  const { user  } = useUser();
-  const isAdmin = user?.isAdmin ?? true;
   const [current, setCurrent] = useState(0);
   const [voted, setVoted] = useState(false);
+  const [voteCount, setVoteCount] = useState<number | null>(null);
 
+  const { data: user, loading: userLoading, error: userError } = useRequest(async () => {
+    const response = await fetch('/api/user/profile', {
+      method: 'GET',
+      credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch user data');
+    return await response.json(); 
+  });
 
-  const prev = () =>
-    setCurrent(current === 0 ? images.length - 1 : current - 1);
-  const next = () =>
-    setCurrent(current === images.length - 1 ? 0 : current + 1);
+  const fetchVoteCount = async () => {
+    const response = await fetch(`/api/problems/voteCount/${id}`, {
+      method: "GET",
+      credentials: "include",
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setVoteCount(data.voteCount);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchVoteCount();
+    }
+  }, [id]);
+
+  if (userLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (userError) {
+    return <div>Error: {userError.message}</div>;
+  }
+
+  if (!user) {
+    return <div>Error: User data is not available</div>;
+  }
+
+  const isAdmin = user.isAdmin;
+
+  const prev = () => setCurrent(current === 0 ? images.length - 1 : current - 1);
+  const next = () => setCurrent(current === images.length - 1 ? 0 : current + 1);
 
   const vote = async () => {
     try {
@@ -30,6 +65,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, title, id }) => {
       if (!response.ok) throw new Error("Vote failed");
 
       setVoted(true);
+      fetchVoteCount(); 
       alert("Thanks for voting!");
     } catch (error) {
       console.error("Voting error:", error);
@@ -37,18 +73,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, title, id }) => {
     }
   };
 
-  const { data: voteCount } = useRequest(async () => {
-    const response = await fetch(`/api/problems/voteCount/${id}`, {
-      method: "GET",
-      credentials: "include",
-    });
-    if (!response.ok) throw new Error("Failed to fetch votes");
-    const data = await response.json();
-    return data.voteCount;
-  });
-
   return (
-    
     <div style={{ width: "200px" }}>
       <h4 style={{ fontWeight: "bold", marginBottom: "8px", fontSize: "15px" }}>
         {title}
@@ -59,9 +84,10 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, title, id }) => {
           alt="Problem"
           style={{
             width: "100%",
-            height: "120px",
+            height: "auto",
             objectFit: "cover",
             borderRadius: "4px",
+            transition: "all 0.3s ease-in-out", 
           }}
         />
         {images.length > 1 && (
@@ -102,9 +128,8 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, title, id }) => {
         )}
       </div>
       {isAdmin ? (
-        <div style={{ marginTop: "8px",alignItems:"center", fontSize: "12px", color: "#555" }}>
-          <span>Votes: {voteCount ?? 0}</span> 
-
+        <div style={{ marginTop: "8px", fontSize: "12px", color: "#555" }}>
+          <span>Votes: {voteCount ?? 0}</span>
         </div>
       ) : (
         <button
