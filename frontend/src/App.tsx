@@ -16,7 +16,7 @@ const ExampleAdmin = <h1>Admin</h1>;
 function App() {
   const { user, loading } = useUser();
 
-  if (!loading) {
+  if (loading) {
     return <Spin size="large" />;
   }
   return (
