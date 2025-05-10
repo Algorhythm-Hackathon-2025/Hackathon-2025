@@ -11,13 +11,20 @@
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.23.0",
+    "@radix-ui/react-accordion": "^1.2.10",
+    "@radix-ui/react-dialog": "^1.1.13",
+    "@radix-ui/react-navigation-menu": "^1.2.12",
     "@tailwindcss/vite": "^4.1.6",
     "antd": "^5.25.1",
+    "class-variance-authority": "^0.7.1",
+    "keen-slider": "^6.8.6",
+    "lucide-react": "^0.509.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^7.6.0",
     "react-router-dom": "^7.6.0",
-    "shadcn": "^2.5.0"
+    "shadcn": "^2.5.0",
+    "tailwind-merge": "^3.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
