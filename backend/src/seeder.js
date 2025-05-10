@@ -1,23 +1,51 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-import Users from "./model/users.js";
+import bcrypt from "bcryptjs";
+import connectDB from "./config/db.js";
+import User from "./model/users.js"; 
 
-dotenv.config();
+const users = [
+  {
+    username: "admin",
+    email: "admin@example.com",
+    password: "admin123",
+    role: "admin",
+  },
+  {
+    username: "worker1",
+    email: "worker1@example.com",
+    password: "worker123",
+    role: "worker",
+  },
+  {
+    username: "user1",
+    email: "user1@example.com",
+    password: "user123",
+    role: "user",
+  },
+];
 
-const MONGO_URI = process.env.MONGO_URI;
-if (!MONGO_URI) throw new Error("MONGO_URI not found");
-const db = await mongoose.connect(MONGO_URI);
+const seedUsers = async () => {
+  try {
+    await connectDB();
 
-console.log("MongoDB connected ", db.connection.name);
+    await User.deleteMany();
+    console.log("Old users removed");
 
-const ADMIN_USER = {
-  email: "admin@email.com",
-  firstName: "Admin",
-  lastName: "Bob",
-  age: 20,
-  password: "AdminPassw0rd123",
+    const hashedUsers = await Promise.all(
+      users.map(async (user) => ({
+        ...user,
+        password: await bcrypt.hash(user.password, 10),
+      }))
+    );
+
+    await User.insertMany(hashedUsers);
+    console.log("Sample users inserted");
+
+    process.exit();
+  } catch (err) {
+    console.error("Seeding failed:", err);
+    process.exit(1);
+  }
 };
 
-const user = new Users(ADMIN_USER);
-await user.save();
-console.log("Added admin");
+seedUsers();
