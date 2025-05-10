@@ -1,16 +1,15 @@
-import React from "react";
+// import React from "react";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { Avatar, Button, Dropdown, Menu, Spin, Layout } from "antd";
 import type { MenuProps } from "antd";
+import { Post } from "../components/ui/post";
 import {
   AppstoreOutlined,
-  BarChartOutlined,
-  CloudOutlined,
-  ShopOutlined,
-  TeamOutlined,
   UploadOutlined,
+  ShopOutlined,
   UserOutlined,
-  VideoCameraOutlined,
+  HeatMapOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import { useUser } from "../providers/user-provider";
 import { logout } from "../api/user/auth";
@@ -24,19 +23,13 @@ const TOP_MENU_ITEMS = [
 ];
 
 const SIDE_MENU_ITEMS: MenuProps["items"] = [
-  UserOutlined,
-  VideoCameraOutlined,
-  UploadOutlined,
-  BarChartOutlined,
-  CloudOutlined,
-  AppstoreOutlined,
-  TeamOutlined,
-  ShopOutlined,
-].map((icon, index) => ({
-  key: String(index + 1),
-  icon: React.createElement(icon),
-  label: `nav ${index + 1}`,
-}));
+  { key: "/", icon: <AppstoreOutlined />, label: "Нүүр" },
+  { key: "/report", icon: <UploadOutlined />, label: "Асуудал мэдээлэх" },
+  { key: "/jobs", icon: <ShopOutlined />, label: "Ажлын зар" },
+  { key: "/profile", icon: <UserOutlined />, label: "Профайл" },
+  { key: "/map", icon: <HeatMapOutlined />, label: "Газрын зураг" },
+  { key: "/logout", icon: <LogoutOutlined />, label: "Гарах" },
+];
 
 export default function PageLayout() {
   const { user, loading } = useUser();
@@ -70,7 +63,7 @@ export default function PageLayout() {
 
   return (
     <div className="flex flex-col h-screen w-screen bg-[#23252d] text-white">
-      {/* Header (always shown) */}
+      {/* Header */}
       <Header className="flex justify-between items-center bg-[#1f1f1f] px-6">
         <Menu
           mode="horizontal"
@@ -80,7 +73,7 @@ export default function PageLayout() {
           onClick={(e) => navigate(e.key)}
         />
         {user ? (
-          <Dropdown>
+          <Dropdown menu={{ items: profileItems }}>
             <Button
               type="text"
               icon={<Avatar src={user.username} />}
@@ -101,17 +94,17 @@ export default function PageLayout() {
         )}
       </Header>
 
-      {/* Sidebar + Content */}
+      {/* Body */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar (only if logged in) */}
+        {/* Left Sidebar */}
         {user && location.pathname !== "/" && (
-          <div className="w-64 bg-gray-800 h-full overflow-y-auto">
+          <div className="w-64 bg-[#23252d] h-full overflow-y-auto">
             <Menu
-              theme="dark"
               mode="inline"
-              defaultSelectedKeys={["4"]}
+              selectedKeys={[location.pathname]}
               items={SIDE_MENU_ITEMS}
               className="h-full"
+              onClick={(e) => navigate(e.key)}
             />
           </div>
         )}
@@ -120,6 +113,20 @@ export default function PageLayout() {
         <div className="flex-1 overflow-y-auto p-4">
           <Outlet />
         </div>
+
+        {/* Right Sidebar (only on home + user logged in) */}
+        {user && location.pathname !== "/" && (
+          <div className="w-80 bg-[#1f1f1f] text-white h-full overflow-y-auto border-l border-gray-800 p-4 hidden lg:block">
+            <h2 className="text-xl font-semibold mb-10">
+              Шийдэгдсэн асуудлууд
+            </h2>
+            <div className="flex flex-col gap-4">
+              {[1, 2, 3].map((id) => (
+                <Post key={id} small />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

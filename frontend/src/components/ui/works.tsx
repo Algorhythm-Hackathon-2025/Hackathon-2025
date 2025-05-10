@@ -1,4 +1,8 @@
 import { Button } from "./button";
+import img1 from "/img/img1.jpg";
+import img2 from "/img/img2.jpg";
+import img3 from "/img/img3.jpg";
+import img4 from "/img/img4.jpg";
 
 interface Feature {
   image: string;
@@ -37,25 +41,25 @@ const Timeline = ({
   },
   features = [
     {
-      image: "https://shadcnblocks.com/images/block/placeholder-4.svg",
+      image: img1,
       title: "Асуудал илгээх",
       description:
         "Хэрэглэгч зам эвдрэл, голын бохирдол зэрэг асуудлыг зураг, тайлбартайгаар илгээнэ.",
     },
     {
-      image: "https://shadcnblocks.com/images/block/placeholder-5.svg",
+      image: img2,
       title: "Хүмүүсийн дэмжлэг",
       description:
         "Бусад хэрэглэгчид асуудлыг үнэлж, лайк дарснаар чухал асуудлууд тодорно.",
     },
     {
-      image: "https://shadcnblocks.com/images/block/placeholder-5.svg",
+      image: img3,
       title: "Байгууллагад хүрэх",
       description:
         "Олон дэмжлэг авсан асуудал холбогдох байгууллагад автоматаар хүргэгдэнэ.",
     },
     {
-      image: "https://shadcnblocks.com/images/block/placeholder-5.svg",
+      image: img4,
       title: "Шийдвэрлэлтийн явц",
       description:
         "Байгууллага хариу өгч, шийдвэрлэлт эхэлсэн эсэхийг хэрэглэгчид хянаж чадна.",
