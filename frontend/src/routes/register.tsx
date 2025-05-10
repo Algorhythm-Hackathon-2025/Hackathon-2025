@@ -17,7 +17,7 @@ export default function SignUpPage() {
       navigate("/");
     },
     onError: () => {
-      message.error("Энэ e-mail хаяг бүртгэлтэй байна!");
+      message.error("Энэ утасны дугаар бүртгэлтэй байна!");
     },
   });
 

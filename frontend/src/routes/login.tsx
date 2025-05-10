@@ -1,7 +1,7 @@
 import { App, Button, Card, Form, Input } from "antd";
 import { useUser } from "../providers/user-provider";
 import { useRequest } from "ahooks";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { login } from "../api/user/auth";
 import phoneNumberRegex from "../consts/phone-num-regex";
 
