@@ -1,40 +1,70 @@
-import React from "react";
-
-interface Barber {
-  avatar?: string;
-  image?: string;
-  name: string;
-}
+import React, { useState } from "react";
 
 interface ImageSliderProps {
-  barber: Barber;
-  serviceType: "barber" | "pc" | "billiards";
+  images: string[];
+  title: string;
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ barber, serviceType }) => {
-  const image = barber.avatar || barber.image;
-    const handleBooking = () => {
-        console.log(`Booking for ${barber.name} in ${serviceType}`);
-    };
+const ImageSlider: React.FC<ImageSliderProps> = ({ images, title }) => {
+  const [current, setCurrent] = useState(0);
 
-  if (!barber || !image) {
-    return <div>No image available</div>;
-  }
+  // Log images array to check its content
+  console.log(images); // Check the actual images array
+
+  const prev = () => setCurrent(current === 0 ? images.length - 1 : current - 1);
+  const next = () => setCurrent(current === images.length - 1 ? 0 : current + 1);
 
   return (
-    <div className="relative w-full">
-      <h2 className="text-lg font-bold text-center">{barber.name}</h2>
-      <img
-        src={image}
-        alt={barber.name}
-        className="rounded w-full h-[120px] object-cover"
-      />
-      <button
-        className="bg-blue-600 mt-2 text-white px-3 py-1 rounded text-sm w-full"
-        onClick={handleBooking}
-      >
-        Vote
-      </button>
+    <div style={{ width: "200px" }}>
+      <h4 style={{ fontWeight: "bold", marginBottom: "8px" }}>{title}</h4>
+      <div style={{ position: "relative" }}>
+        <img
+          src={images[current]}
+          alt="Problem"
+          style={{
+            width: "100%",
+            height: "120px",
+            objectFit: "cover",
+            borderRadius: "4px",
+          }}
+        />
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={prev}
+              style={{
+                position: "absolute",
+                left: 0,
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "#0008",
+                color: "#fff",
+                border: "none",
+                padding: "2px 6px",
+                cursor: "pointer",
+              }}
+            >
+              ◀
+            </button>
+            <button
+              onClick={next}
+              style={{
+                position: "absolute",
+                right: 0,
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "#0008",
+                color: "#fff",
+                border: "none",
+                padding: "2px 6px",
+                cursor: "pointer",
+              }}
+            >
+              ▶
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 };

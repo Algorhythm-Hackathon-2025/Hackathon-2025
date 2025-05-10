@@ -11,12 +11,12 @@ const DefaultLayout = lazy(() => import("./routes/layout"));
 const Login = lazy(() => import("./routes/login"));
 const Register = lazy(() => import("./routes/register"));
 
-const ExampleAdmin = <h1>Admin</h1>;
+const AdminHome = lazy(() => import("./routes/admin/Home"));
 
 function App() {
   const { user, loading } = useUser();
 
-  if (!loading) {
+  if (loading) {
     return <Spin size="large" />;
   }
   return (
@@ -31,7 +31,7 @@ function App() {
             <Route path="/register" element={<Register />} />
           </>
         ) : (
-          <Route index element={ExampleAdmin} />
+          <Route index element={<AdminHome/>} />
         )}
         <Route path="*" element={<NotFound />} />
       </Route>
