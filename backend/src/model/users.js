@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
   number: {
-    type: Number,
+    type: String,
     required: true,
     unique: true,
   },
@@ -16,10 +16,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  role: {
-    type: String,
-    enum: ["user", "admin", "worker"],
-    default: "user",
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
+  takenProblems: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Problem",
+    },
+  ],
+  balance: {
+    type: Number,
+    default: 100000,
   },
   createdAt: {
     type: Date,
@@ -27,7 +36,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// Method to match password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
