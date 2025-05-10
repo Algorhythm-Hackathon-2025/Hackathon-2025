@@ -1,13 +1,22 @@
-// import { useState } from "react";
-import LoginForm from "./components/auth/login-form";
+import { lazy } from "react";
+import { BrowserRouter, Route, Routes } from "react-router";
+
+const Home = lazy(() => import("./routes/home"));
+const About = lazy(() => import("./routes/about"));
+const Contact = lazy(() => import("./routes/contact"));
+const DefaultLayout = lazy(() => import("./routes/layout"));
 
 function App() {
-  // const [count, setCount] = useState(0);
-
   return (
-    <>
-      <LoginForm />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<DefaultLayout />}>
+          <Route index element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
