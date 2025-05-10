@@ -1,0 +1,100 @@
+import Problem from "../model/problemModel.js";
+
+export const createProblem = async (req, res) => {
+  const { title } = req.body;
+
+  if (!title || req.files.length < 1) {
+    return res
+      .status(400)
+      .json({ message: "Title and at least one image are required." });
+  }
+
+  const imagePaths = req.files.map((file) => file.path);
+
+  const problem = await Problem.create({
+    user: req.user._id,
+    title,
+    images: imagePaths,
+  });
+
+  res.status(201).json(problem);
+};
+
+export const getProblems = async (req, res) => {
+  const problems = await Problem.find({}).sort({ createdAt: -1 });
+  res.status(200).json(problems);
+};
+
+export const getProblemById = async (req, res) => {
+  const { id } = req.params;
+
+  const problem = await Problem.findById(id);
+
+  if (!problem) {
+    return res.status(404).json({ message: "Problem not found." });
+  }
+
+  res.status(200).json(problem);
+};
+
+export const voteProblem = async (req, res) => {
+  const { id } = req.params;
+
+  const problem = await Problem.findById(id);
+  if (!problem) {
+    return res.status(404).json({ message: "Problem not found." });
+  }
+
+  // Ensure votes is initialized
+  if (!problem.votes) {
+    problem.votes = []; // Initialize if undefined
+  }
+
+  if (problem.votes.includes(req.user._id)) {
+    return res.status(400).json({ message: "You have already voted." });
+  }
+
+  problem.votes.push(req.user._id);
+  problem.voteCount += 1;
+  await problem.save();
+  res.status(200).json({ message: "Vote added successfully." });
+};
+
+export const getUserProblems = async (req, res) => {
+  const userId = req.user._id;
+
+  const problems = await Problem.find({ user: userId }).sort({ createdAt: -1 });
+
+  if (!problems || problems.length === 0) {
+    return res.status(404).json({ message: "No problems found for this user." });
+  }
+
+  res.status(200).json(problems);
+};
+
+
+export const deleteProblem = async (req, res) => {
+  const { id } = req.params;
+
+  const problem = await Problem.findById(id);
+  if (!problem) {
+    return res.status(404).json({ message: "Problem not found." });
+  }
+
+  if (problem.user.toString() !== req.user._id.toString()) {
+    return res.status(403).json({ message: "You are not authorized to delete this problem." });
+  }
+
+  await problem.deleteOne();
+  res.status(200).json({ message: "Problem deleted successfully." });
+};
+
+export const getVoteCount = async (req, res) => {
+  const { id } = req.params;
+
+  const problem = await Problem.findById(id);
+  if (!problem) {
+    return res.status(404).json({ message: "Problem not found." });
+  }
+  res.status(200).json({ voteCount: problem.voteCount });
+}
