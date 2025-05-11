@@ -14,7 +14,7 @@ const Register = lazy(() => import("./routes/register"));
 const Map = lazy(() => import("./routes/map"));
 // const Profile = lazy(() => import("./routes/profile"));
 // const Jobs = lazy(() => import("./routes/jobs"));
-const AdminHome = lazy(() => import("./routes/admin/Home"));
+// const AdminHome = lazy(() => import("./routes/admin/Home"));
 const AdminList = lazy(() => import("./routes/admin/List"));
 
 function App() {
@@ -41,7 +41,7 @@ function App() {
           </>
         ) : (
           <Route element={<SidebarLayout />}>
-            <Route index element={<AdminHome />} />
+            <Route index element={<Map />} />
             <Route path="/admin" element={<AdminList />} />
           </Route>
         )}
