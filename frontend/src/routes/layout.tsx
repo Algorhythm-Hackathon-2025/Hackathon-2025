@@ -8,8 +8,7 @@ const { Header } = Layout;
 
 const TOP_MENU_ITEMS = [
   { label: "Нүүр", key: "/" },
-  { label: "Асуудал харах", key: "/about" },
-  { label: "Асуудал үүсгэх", key: "/contact" },
+  { label: "Асуудал харах", key: "/report" },
 ];
 const TOP_MENU_ITEMS_ADMIN = [
   { label: "Нүүр", key: "/" },
