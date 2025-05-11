@@ -9,6 +9,7 @@ interface Problem {
   images: string[];
   voteSum: number;
   selfVote?: "up" | "down";
+  status: "pending" | "accepted" | "rejected" | "done";
 }
 
 export default function Home() {
@@ -47,6 +48,7 @@ export default function Home() {
               imageUrls={imageUrls}
               selfVote={problem.selfVote}
               voteSum={problem.voteSum}
+              status={problem.status}
               onUpvote={() =>
                 voteRun(
                   problem._id,
@@ -60,7 +62,6 @@ export default function Home() {
                 )
               }
               voting={voting}
-              small
             />
           );
         })}

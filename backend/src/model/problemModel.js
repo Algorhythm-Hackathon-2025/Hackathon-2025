@@ -53,6 +53,11 @@ const problemSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "rejected", "done"],
+      default: "pending",
+    },
   },
   {
     timestamps: true,

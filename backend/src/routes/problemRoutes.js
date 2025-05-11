@@ -8,9 +8,11 @@ import {
   getUserProblems,
   deleteProblem,
   getVoteCount,
+  updateProblemStatus,
   takeEasyProblem,
 } from "../controllers/problemController.js";
 import protect from "../middlewares/authenticate.js";
+import { admin } from "../middlewares/authenticate.js";
 
 const router = express.Router();
 
@@ -34,4 +36,5 @@ router.get("/user", protect, getUserProblems);
 router.delete("/delete/:id", protect, deleteProblem);
 router.get("/voteCount/:id", protect, getVoteCount);
 router.post("/take/:id", protect, takeEasyProblem);
+router.put("/:id/status", protect, admin, updateProblemStatus);
 export default router;

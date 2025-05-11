@@ -1,7 +1,7 @@
 import React from "react";
-import { Avatar, Button, Card, Carousel } from "antd";
+import { Avatar, Button, Card, Carousel, Tooltip } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
-// import Comment from "/img/comment.png";
+import { CheckCircle, XCircle, Loader2, ClipboardCheck } from "lucide-react";
 
 const { Meta } = Card;
 
@@ -14,7 +14,43 @@ interface PostProps {
   voting?: boolean;
   onUpvote?: () => void;
   onDownvote?: () => void;
+  status?: "pending" | "accepted" | "rejected" | "done";
 }
+
+const getStatusIcon = (status: PostProps["status"]) => {
+  switch (status) {
+    case "pending":
+      return (
+        <div className="flex items-center gap-1 text-yellow-500 text-sm">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          <span>Pending</span>
+        </div>
+      );
+    case "accepted":
+      return (
+        <div className="flex items-center gap-1 text-blue-500 text-sm">
+          <ClipboardCheck className="w-4 h-4" />
+          <span>Accepted</span>
+        </div>
+      );
+    case "rejected":
+      return (
+        <div className="flex items-center gap-1 text-red-500 text-sm">
+          <XCircle className="w-4 h-4" />
+          <span>Rejected</span>
+        </div>
+      );
+    case "done":
+      return (
+        <div className="flex items-center gap-1 text-green-600 text-sm">
+          <CheckCircle className="w-4 h-4" />
+          <span>Done</span>
+        </div>
+      );
+    default:
+      return null;
+  }
+};
 
 const Post: React.FC<PostProps> = ({
   small = false,
@@ -23,6 +59,7 @@ const Post: React.FC<PostProps> = ({
   voteSum,
   voting,
   selfVote,
+  status,
   onUpvote,
   onDownvote,
 }) => {
@@ -30,7 +67,7 @@ const Post: React.FC<PostProps> = ({
     "https://images.unsplash.com/photo-1605460375648-278bcbd579a6",
   ];
   const imageList = imageUrls.length > 0 ? imageUrls : defaultImages;
-  console.log("imageList", imageList);
+
   return (
     <Card
       style={{
@@ -68,7 +105,7 @@ const Post: React.FC<PostProps> = ({
             : "This is the longer description for the full-sized post card."
         }
       />
-      <div className="flex gap-4 items-center justify-end">
+      <div className="flex gap-4 items-center justify-end mt-4">
         <Button
           key="up"
           loading={voting}
@@ -80,8 +117,8 @@ const Post: React.FC<PostProps> = ({
             />
           }
           size="small"
-        ></Button>
-        <span className="text-gray-300">{voteSum}</span>
+        />
+        <span className="text-gray-500">{voteSum}</span>
         <Button
           key="down"
           loading={voting}
@@ -93,7 +130,18 @@ const Post: React.FC<PostProps> = ({
             />
           }
           size="small"
-        ></Button>
+        />
+        {status && (
+          <Tooltip title={status}>
+            <Button
+              key="status"
+              type="text"
+              icon={getStatusIcon(status)}
+              size="small"
+              className="mx-5"
+            />
+          </Tooltip>
+        )}
       </div>
     </Card>
   );
