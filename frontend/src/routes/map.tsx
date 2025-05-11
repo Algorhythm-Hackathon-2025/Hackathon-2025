@@ -47,10 +47,15 @@ const MapComponent: React.FC = () => {
 
     const map = L.map(mapRef.current).setView([47.9121, 106.9385], 13);
     mapInstance.current = map;
+    
+L.tileLayer("https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=3dabaeedc2614ee4a665fb9f4f461143", {
+  attribution:
+    '&copy; <a href="https://carto.com/">CARTO</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  subdomains: "abcd",
+  maxZoom: 19,
+}).addTo(map);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
-    }).addTo(map);
+
 
     axios
       .get("/api/problems/get")
