@@ -120,9 +120,9 @@ const App: React.FC = () => {
       itemLayout="horizontal"
       loadMore={loadMore}
       dataSource={list}
-      renderItem={(item) => (
+      renderItem={(item, index) => (
         <List.Item
-          style={{ marginRight: "30px" }}
+          style={{ marginRight: "30px", fontSize: "15px", color: "white" }}
           actions={[
             item.status === "accepted" ? (
               <Button
@@ -142,18 +142,47 @@ const App: React.FC = () => {
         >
           <Skeleton avatar title={false} loading={item.loading} active>
             <List.Item.Meta
-              style={{ marginTop: "10px", marginLeft: "20px" }}
+              style={{
+                marginTop: "10px",
+                marginLeft: "20px",
+                display: "flex",
+                alignItems: "center",
+              }}
               avatar={
-                item.images && item.images.length > 0 ? (
-                  <Avatar src={item.images[0]} />
-                ) : (
-                  <Avatar icon="user" />
-                )
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <div
+                    style={{
+                      color: "white",
+                      fontSize: "24px", 
+                      marginRight: "14px",
+                      width: "20px",
+                      textAlign: "center",
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+
+                  {item.images && item.images.length > 0 ? (
+                    <Avatar src={item.images[0]} />
+                  ) : (
+                    <Avatar icon="user" />
+                  )}
+                </div>
               }
-              title={item.title}
-              description={`Category: ${item.categories} | Votes: ${item.voteCount}`}
+              title={
+                <div style={{ fontSize: "19px", color: "white" }}>
+                  {item.title}
+                </div>
+              }
+              description={
+                <div style={{ fontSize: "14px", color: "white" }}>
+                  Category: {item.categories} | Votes: {item.voteCount}
+                </div>
+              }
             />
-            <div>{item.difficulty}</div>
+            <div style={{ fontSize: "16px", color: "white" }}>
+              {item.difficulty}
+            </div>
           </Skeleton>
         </List.Item>
       )}
