@@ -27,7 +27,17 @@ export const createProblem = async (req, res) => {
 };
 
 export const getProblems = async (req, res) => {
-  const problems = await Problem.find({}).sort({ createdAt: -1 });
+  const userId = req.user._id;
+  let problems = await Problem.find({}).sort({ createdAt: -1 }).lean();
+  problems = problems.map((problem) => {
+    problem.images = problem.images.map((image) => {
+      return image.replace(/\\/g, "/");
+    });
+    const selfVote = problem.votes.find(
+      (vote) => vote.user.toString() === userId.toString()
+    )?.vote;
+    return { ...problem, selfVote };
+  });
   res.status(200).json(problems);
 };
 
@@ -44,23 +54,40 @@ export const getProblemById = async (req, res) => {
 };
 
 export const voteProblem = async (req, res) => {
-  const { id } = req.params;
+  const { id, vote } = req.params;
 
   const problem = await Problem.findById(id);
   if (!problem) {
     return res.status(404).json({ message: "Problem not found." });
   }
 
+  if (vote && vote !== "up" && vote !== "down") {
+    res.status(404);
+    throw new Error("Invalid vote type");
+  }
+
   if (!problem.votes) {
     problem.votes = [];
   }
 
-  if (problem.votes.includes(req.user._id)) {
-    return res.status(400).json({ message: "You have already voted." });
+  const voteDoc = problem.votes.find(
+    ({ user }) => user.toString() === req.user._id.toString()
+  );
+  if (voteDoc) {
+    problem.voteSum -= voteDoc.vote === "up" ? 1 : -1;
+    if (vote) {
+      problem.voteSum += vote === "up" ? 1 : -1;
+      voteDoc.vote = vote;
+    } else {
+      problem.votes = problem.votes.filter((vote) => vote !== voteDoc);
+      problem.voteCount -= 1;
+    }
+  } else if (vote) {
+    problem.votes.push({ user: req.user._id, vote });
+    problem.voteSum += vote === "up" ? 1 : -1;
+    problem.voteCount += 1;
   }
 
-  problem.votes.push(req.user._id);
-  problem.voteCount += 1;
   await problem.save();
   res.status(200).json({ message: "Vote added successfully." });
 };

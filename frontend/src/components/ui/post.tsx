@@ -1,9 +1,6 @@
-import React, { useState } from "react";
-import upBlue from "/img/up-blue.png";
-import upBlack from "/img/up-black.png";
-import downRed from "/img/down-red.png";
-import downBlack from "/img/down-black.png";
-import { Avatar, Card, Carousel } from "antd";
+import React from "react";
+import { Avatar, Button, Card, Carousel } from "antd";
+import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 // import Comment from "/img/comment.png";
 
 const { Meta } = Card;
@@ -12,19 +9,23 @@ interface PostProps {
   small?: boolean;
   title?: string;
   imageUrls?: string[];
+  voteSum: number;
+  selfVote?: "up" | "down";
+  voting?: boolean;
+  onUpvote?: () => void;
+  onDownvote?: () => void;
 }
 
 const Post: React.FC<PostProps> = ({
   small = false,
   title,
   imageUrls = [],
+  voteSum,
+  voting,
+  selfVote,
+  onUpvote,
+  onDownvote,
 }) => {
-  const [activeButton, setActiveButton] = useState<"up" | "down">("down");
-
-  const handleButtonClick = (button: "up" | "down") => {
-    setActiveButton(button);
-  };
-
   const defaultImages = [
     "https://images.unsplash.com/photo-1605460375648-278bcbd579a6",
   ];
@@ -37,7 +38,7 @@ const Post: React.FC<PostProps> = ({
         margin: small ? "0 auto" : "auto",
       }}
       cover={
-        <Carousel>
+        <Carousel arrows infinite={false}>
           {imageList.map((url, idx) => (
             <div key={idx}>
               <img
@@ -55,34 +56,6 @@ const Post: React.FC<PostProps> = ({
           ))}
         </Carousel>
       }
-      actions={
-        small
-          ? undefined
-          : [
-              <button
-                key="up"
-                onClick={() => handleButtonClick("up")}
-                style={{ border: "none", padding: "10px", cursor: "pointer" }}
-              >
-                <img
-                  src={activeButton === "up" ? upBlue : upBlack}
-                  alt="Up Button"
-                  style={{ width: 24, height: 24 }}
-                />
-              </button>,
-              <button
-                key="down"
-                onClick={() => handleButtonClick("down")}
-                style={{ border: "none", padding: "10px", cursor: "pointer" }}
-              >
-                <img
-                  src={activeButton === "down" ? downRed : downBlack}
-                  alt="Down Button"
-                  style={{ width: 24, height: 24 }}
-                />
-              </button>,
-            ]
-      }
     >
       <Meta
         avatar={
@@ -95,6 +68,33 @@ const Post: React.FC<PostProps> = ({
             : "This is the longer description for the full-sized post card."
         }
       />
+      <div className="flex gap-4 items-center justify-end">
+        <Button
+          key="up"
+          loading={voting}
+          onClick={() => onUpvote?.()}
+          type="text"
+          icon={
+            <ArrowUpOutlined
+              style={{ color: selfVote === "up" ? "green" : "gray" }}
+            />
+          }
+          size="small"
+        ></Button>
+        <span className="text-gray-300">{voteSum}</span>
+        <Button
+          key="down"
+          loading={voting}
+          onClick={() => onDownvote?.()}
+          type="text"
+          icon={
+            <ArrowDownOutlined
+              style={{ color: selfVote === "down" ? "red" : "gray" }}
+            />
+          }
+          size="small"
+        ></Button>
+      </div>
     </Card>
   );
 };

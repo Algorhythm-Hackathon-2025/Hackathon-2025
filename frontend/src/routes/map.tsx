@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import ReactDOM from "react-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import ImageSlider from "../components/ui/imageSlider";
+import { createRoot } from "react-dom/client";
 
 const MapComponent: React.FC = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -60,9 +60,12 @@ const MapComponent: React.FC = () => {
           const { coordinates, categories, title, images } = problem;
 
           if (coordinates && coordinates.length === 2) {
-            const icon = icons[categories as keyof typeof icons] || icons.Others;
+            const icon =
+              icons[categories as keyof typeof icons] || icons.Others;
 
-            const marker = L.marker([coordinates[0], coordinates[1]], { icon }).addTo(map);
+            const marker = L.marker([coordinates[0], coordinates[1]], {
+              icon,
+            }).addTo(map);
 
             // Create a div container for the popup content
             const popupDiv = document.createElement("div");
@@ -73,16 +76,23 @@ const MapComponent: React.FC = () => {
             // When the popup is opened, render the ImageSlider into the container
             marker.on("popupopen", () => {
               // Normalize image paths (convert backslashes to forward slashes and prefix with uploads folder)
-              const normalizedImages = (images || []).map((img: string) =>
-                `/api/uploads/${img.replace(/\\/g, "/").split("/").pop()}`
+              const normalizedImages = (images || []).map(
+                (img: string) => `/api/uploads/${img.replace(/\\/g, "/")}`
               );
 
               // Render React component only if not already rendered
               if (!popupDiv.hasChildNodes()) {
                 // React component render to popupDiv
-                ReactDOM.render(
-                  <ImageSlider images={normalizedImages} title={title} id={problem._id} />,
-                  popupDiv
+                // ReactDOM.render(
+                //   <ImageSlider images={normalizedImages} title={title} id={problem._id} />,
+                //   popupDiv
+                // );
+                createRoot(popupDiv).render(
+                  <ImageSlider
+                    images={normalizedImages}
+                    title={title}
+                    id={problem._id}
+                  />
                 );
               }
             });
