@@ -13,7 +13,7 @@ const Login = lazy(() => import("./routes/login"));
 const Register = lazy(() => import("./routes/register"));
 const Map = lazy(() => import("./routes/map"));
 // const Profile = lazy(() => import("./routes/profile"));
-// const Jobs = lazy(() => import("./routes/jobs"));
+const Jobs = lazy(() => import("./routes/jobs"));
 // const AdminHome = lazy(() => import("./routes/admin/Home"));
 const AdminList = lazy(() => import("./routes/admin/List"));
 
@@ -35,6 +35,7 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/report" element={<Contact />} />
               <Route path="/map" element={<Map />} />
+              <Route path="/jobs" element={<Jobs />} /> 
             </Route>
             {/* <Route path="/profile" element={<Profile />} />
             <Route path="/jobs" element={<Jobs />} /> */}
