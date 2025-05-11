@@ -9,60 +9,64 @@ const MapComponent: React.FC = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<L.Map | null>(null);
 
-  const icons: { [k: string]: L.Icon } = {
-    streetlight: L.icon({
-      iconUrl: "/customIcon/bulb.png",
-      iconSize: [32, 32],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-    }),
-    pothole: L.icon({
-      iconUrl: "/customIcon/pothole.png",
-      iconSize: [32, 32],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-    }),
-    sidewalk: L.icon({
-      iconUrl: "/customIcon/sidewalk.png",
-      iconSize: [32, 32],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-    }),
-    trash: L.icon({
-      iconUrl: "/customIcon/waste.png",
-      iconSize: [32, 32],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-    }),
-    others: L.icon({
-      iconUrl: "/customIcon/others.png",
-      iconSize: [32, 32],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-    }),
-  };
-
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
 
     const map = L.map(mapRef.current).setView([47.9121, 106.9385], 13);
     mapInstance.current = map;
-    
-L.tileLayer("https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=3dabaeedc2614ee4a665fb9f4f461143", {
-  attribution:
-    '&copy; <a href="https://carto.com/">CARTO</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  subdomains: "abcd",
-  maxZoom: 19,
-}).addTo(map);
 
-
+    L.tileLayer(
+      "https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=3dabaeedc2614ee4a665fb9f4f461143",
+      {
+        attribution:
+          '&copy; <a href="https://carto.com/">CARTO</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        subdomains: "abcd",
+        maxZoom: 19,
+      }
+    ).addTo(map);
 
     axios
       .get("/api/problems/get")
       .then((response) => {
         const problems = response.data;
         problems.forEach((problem: any) => {
-          const { coordinates, categories, title, images } = problem;
+          const { coordinates, categories, title, images, difficulty } =
+            problem;
+
+          const iconSize: [number, number] =
+            difficulty === "hard" ? [48, 48] : [32, 32];
+          const icons: { [k: string]: L.Icon } = {
+            streetlight: L.icon({
+              iconUrl: "/customIcon/bulb.png",
+              iconSize,
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+            }),
+            pothole: L.icon({
+              iconUrl: "/customIcon/pothole.png",
+              iconSize,
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+            }),
+            sidewalk: L.icon({
+              iconUrl: "/customIcon/sidewalk.png",
+              iconSize,
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+            }),
+            trash: L.icon({
+              iconUrl: "/customIcon/waste.png",
+              iconSize,
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+            }),
+            others: L.icon({
+              iconUrl: "/customIcon/others.png",
+              iconSize,
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+            }),
+          };
 
           if (coordinates && coordinates.length === 2) {
             const icon = icons[categories as string] || icons.others;
@@ -89,10 +93,6 @@ L.tileLayer("https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=3dabaee
 
               if (!popupDiv.hasChildNodes()) {
                 // React component render to popupDiv
-                // ReactDOM.render(
-                //   <ImageSlider images={normalizedImages} title={title} id={problem._id} />,
-                //   popupDiv
-                // );
                 createRoot(popupDiv).render(
                   <ImageSlider
                     images={normalizedImages}
