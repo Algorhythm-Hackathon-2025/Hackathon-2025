@@ -40,10 +40,10 @@ function App() {
             <Route path="/jobs" element={<Jobs />} /> */}
           </>
         ) : (
-          <Route element={<SidebarLayout />}>
+          <>
             <Route index element={<Map />} />
             <Route path="/admin" element={<AdminList />} />
-          </Route>
+          </>
         )}
         <Route path="*" element={<NotFound />} />
       </Route>

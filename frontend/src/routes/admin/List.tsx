@@ -33,7 +33,6 @@ const App: React.FC = () => {
 
       const pagedData = filteredSorted.slice(0, pageNumber * PAGE_SIZE);
 
-      // Normalize image URLs for each item
       const normalizedData = pagedData.map((item: any) => ({
         ...item,
         images: (item.images || []).map(
@@ -91,16 +90,19 @@ const App: React.FC = () => {
     ) : null;
 
   return (
+    
     <List
       className="demo-loadmore-list"
       loading={initLoading}
+      style={{backgroundColor: "black", height: "650px", marginTop: "-9px", width: "100%"}}
       itemLayout="horizontal"
       loadMore={loadMore}
       dataSource={list}
       renderItem={(item) => (
-        <List.Item actions={[<a key="edit">Шийдэх</a>]}>
+        <List.Item style={{marginRight: "30px"}} actions={[<a key="edit">Шийдэх</a>]}>
           <Skeleton avatar title={false} loading={item.loading} active>
             <List.Item.Meta
+            style={{marginTop: "10px", marginLeft: "20px"}}
               avatar={
                 item.images && item.images.length > 0 ? (
                   <Avatar src={item.images[0]} />
