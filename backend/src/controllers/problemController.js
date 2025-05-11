@@ -2,7 +2,8 @@ import Problem from "../model/problemModel.js";
 import User from "../model/users.js";
 
 export const createProblem = async (req, res) => {
-  const { title, difficulty, longitude, latitude, categories } = req.body;
+  const { title, difficulty, longitude, latitude, categories } =
+    req.body;
 
   const coordinates = [parseFloat(longitude), parseFloat(latitude)];
 
@@ -104,6 +105,31 @@ export const getUserProblems = async (req, res) => {
   }
 
   res.status(200).json(problems);
+};
+
+export const updateProblemStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const validStatuses = ["pending", "accepted", "rejected", "done"];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ message: "Invalid status value." });
+  }
+
+  try {
+    const problem = await Problem.findById(id);
+    if (!problem) {
+      return res.status(404).json({ message: "Problem not found." });
+    }
+
+    problem.status = status;
+    await problem.save();
+
+    res.status(200).json({ message: "Status updated successfully.", problem });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error." });
+  }
 };
 
 export const deleteProblem = async (req, res) => {
