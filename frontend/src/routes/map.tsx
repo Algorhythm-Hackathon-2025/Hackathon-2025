@@ -9,32 +9,32 @@ const MapComponent: React.FC = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<L.Map | null>(null);
 
-  const icons: { [k: string]: L.Icon } = {
-    streetlight: L.icon({
+  const icons = {
+    Streetlight: L.icon({
       iconUrl: "/customIcon/bulb.png",
       iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
-    pothole: L.icon({
+    Pothole: L.icon({
       iconUrl: "/customIcon/pothole.png",
       iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
-    sidewalk: L.icon({
+    Sidewalk: L.icon({
       iconUrl: "/customIcon/sidewalk.png",
       iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
-    trash: L.icon({
+    Trash: L.icon({
       iconUrl: "/customIcon/waste.png",
       iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
-    others: L.icon({
+    Others: L.icon({
       iconUrl: "/customIcon/others.png",
       iconSize: [32, 32],
       iconAnchor: [12, 41],
@@ -60,9 +60,8 @@ const MapComponent: React.FC = () => {
           const { coordinates, categories, title, images } = problem;
 
           if (coordinates && coordinates.length === 2) {
-            const icon = icons[categories as string] || icons.others;
-
-            console.log(icon);
+            const icon =
+              icons[categories as keyof typeof icons] || icons.Others;
 
             const marker = L.marker([coordinates[0], coordinates[1]], {
               icon,
@@ -78,7 +77,7 @@ const MapComponent: React.FC = () => {
             marker.on("popupopen", () => {
               // Normalize image paths (convert backslashes to forward slashes and prefix with uploads folder)
               const normalizedImages = (images || []).map(
-                (img: string) => `/api/${img.replace(/\\/g, "/")}`
+                (img: string) => `/api/uploads/${img.replace(/\\/g, "/")}`
               );
 
               // Render React component only if not already rendered
