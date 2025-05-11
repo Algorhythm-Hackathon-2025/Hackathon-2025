@@ -12,9 +12,10 @@ import { Outlet, useNavigate } from "react-router";
 import { Post } from "../components/ui/post";
 
 const SIDE_MENU_ITEMS: MenuProps["items"] = [
-  { key: "/report", icon: <UploadOutlined />, label: "Асуудал мэдээлэх" },
+  { key: "/report", icon: <UploadOutlined />, label: "Асуудал мэдээллэх" },
   { key: "/jobs", icon: <ShopOutlined />, label: "Ажлын зар" },
   { key: "/map", icon: <HeatMapOutlined />, label: "Газрын зураг" },
+  { key: "/about", icon: <HeatMapOutlined />, label: "Сүүлийн үеийн асуудлууд" },
 ];
 
 export default function SidebarLayout() {
