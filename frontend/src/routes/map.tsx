@@ -62,26 +62,26 @@ const MapComponent: React.FC = () => {
           if (coordinates && coordinates.length === 2) {
             const icon = icons[categories as string] || icons.others;
 
-            console.log(icon);
+            console.log(JSON.stringify(icon) + "sda");
 
             const marker = L.marker([coordinates[0], coordinates[1]], {
               icon,
             }).addTo(map);
 
-            // Create a div container for the popup content
+            console.log(
+              `Marker added at: ${coordinates[0]}, ${coordinates[1]} with icon: ${icon.options.iconUrl}`
+            );
+
             const popupDiv = document.createElement("div");
             popupDiv.style.width = "210px";
             popupDiv.style.padding = "8px";
             marker.bindPopup(popupDiv);
 
-            // When the popup is opened, render the ImageSlider into the container
             marker.on("popupopen", () => {
-              // Normalize image paths (convert backslashes to forward slashes and prefix with uploads folder)
               const normalizedImages = (images || []).map(
                 (img: string) => `/api/${img.replace(/\\/g, "/")}`
               );
 
-              // Render React component only if not already rendered
               if (!popupDiv.hasChildNodes()) {
                 // React component render to popupDiv
                 // ReactDOM.render(
