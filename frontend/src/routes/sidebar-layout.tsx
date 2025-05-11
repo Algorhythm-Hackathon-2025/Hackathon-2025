@@ -15,7 +15,11 @@ const SIDE_MENU_ITEMS: MenuProps["items"] = [
   { key: "/report", icon: <UploadOutlined />, label: "Асуудал мэдээлэх" },
   { key: "/jobs", icon: <ShopOutlined />, label: "Ажлын зар" },
   { key: "/map", icon: <HeatMapOutlined />, label: "Газрын зураг" },
-  { key: "/about", icon: <ClockCircleOutlined />, label: "Сүүлийн үеийн асуудлууд" },
+  {
+    key: "/about",
+    icon: <ClockCircleOutlined />,
+    label: "Сүүлийн үеийн асуудлууд",
+  },
 ];
 
 interface Problem {

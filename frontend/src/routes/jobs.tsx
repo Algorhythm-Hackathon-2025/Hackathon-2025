@@ -12,7 +12,7 @@ interface DataType {
   images?: string[];
   loading?: boolean;
   difficulty: string;
-  status?: string; 
+  status?: string;
 }
 
 const PAGE_SIZE = 7;
@@ -53,7 +53,7 @@ const App: React.FC = () => {
 
   const solve = async (id: string) => {
     try {
-      const response = await axios.put(`/api/problems/update/${id}`, {
+      await axios.put(`/api/problems/update/${id}`, {
         status: "accepted",
       });
       message.success("Амжилттэй хүлээн авлаа.");
