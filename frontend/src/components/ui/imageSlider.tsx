@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRequest } from "ahooks";
+import { message } from "antd";
 
 interface ImageSliderProps {
   images: string[];
@@ -66,7 +67,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, title, id }) => {
 
       setVoted(true);
       fetchVoteCount(); 
-      alert("Thanks for voting!");
+      message.success("Thanks for voting!");
     } catch (error) {
       console.error("Voting error:", error);
       alert("Failed to vote. Try again.");

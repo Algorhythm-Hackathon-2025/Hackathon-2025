@@ -12,7 +12,7 @@ interface DataType {
   images?: string[];
   loading?: boolean;
   difficulty: string;
-  status?: string; // ✅ added status
+  status?: string;
 }
 
 const PAGE_SIZE = 7;
