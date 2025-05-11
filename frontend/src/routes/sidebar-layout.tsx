@@ -12,10 +12,8 @@ import { Outlet, useNavigate } from "react-router";
 import { Post } from "../components/ui/post";
 
 const SIDE_MENU_ITEMS: MenuProps["items"] = [
-  { key: "/", icon: <AppstoreOutlined />, label: "Нүүр" },
   { key: "/report", icon: <UploadOutlined />, label: "Асуудал мэдээлэх" },
   { key: "/jobs", icon: <ShopOutlined />, label: "Ажлын зар" },
-  { key: "/profile", icon: <UserOutlined />, label: "Профайл" },
   { key: "/map", icon: <HeatMapOutlined />, label: "Газрын зураг" },
 ];
 
@@ -25,7 +23,6 @@ export default function SidebarLayout() {
 
   return (
     <div className="flex flex-1 overflow-hidden">
-      {/* Left Sidebar */}
       {user && (
         <div className="w-64 bg-[#23252d] h-full overflow-y-auto">
           <Menu

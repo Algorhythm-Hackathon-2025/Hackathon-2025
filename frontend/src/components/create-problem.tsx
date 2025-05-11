@@ -9,7 +9,7 @@ import {
   X,
 } from "lucide-react";
 import { App, Button, Card, Input, Select, Typography } from "antd";
-
+import { useNavigate } from "react-router-dom";
 export default function CreateProblem() {
   const [images, setImages] = useState<{ file: File; url: string }[]>([]);
   const [caption, setCaption] = useState("");
@@ -21,7 +21,7 @@ export default function CreateProblem() {
   const [geoLoading, setGeoLoading] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { message } = App.useApp();
-
+  const navigate = useNavigate();
   // Max file size: 5MB
   const MAX_FILE_SIZE = 5 * 1024 * 1024;
   // Max number of images: 5
@@ -130,8 +130,8 @@ export default function CreateProblem() {
       formData.append("title", caption); // Send caption as title
       formData.append("difficulty", difficulty); // Send difficulty level
       // formData.append("coordinates", JSON.stringify(location)); // Send location as coordinates
-      formData.append("latitude", location.lat.toString()); // Send latitude
-      formData.append("longitude", location.lng.toString()); // Send longitude
+      formData.append("latitude", location.lng.toString()); // Send latitude
+      formData.append("longitude", location.lat.toString()); // Send longitude
       formData.append("categories", category); // Send category
       images.forEach((image) => {
         formData.append("images", image.file);
@@ -153,6 +153,7 @@ export default function CreateProblem() {
       setLocation(undefined);
       setErrorMessage("");
       message.success("Your report was submitted successfully. Thank you!");
+      navigate("/about")
     } catch (error) {
       setErrorMessage(
         (error as any).message || "Failed to submit. Please try again."

@@ -2,7 +2,7 @@ import Problem from "../model/problemModel.js";
 import User from "../model/users.js";
 
 export const createProblem = async (req, res) => {
-  const { title, difficulty, longitude, latitude, categories, status } =
+  const { title, difficulty, longitude, latitude, categories } =
     req.body;
 
   const coordinates = [parseFloat(longitude), parseFloat(latitude)];
@@ -22,7 +22,6 @@ export const createProblem = async (req, res) => {
     difficulty,
     coordinates,
     categories,
-    status,
   });
 
   res.status(201).json(problem);
