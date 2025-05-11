@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar, Button, Card, Carousel, Tooltip } from "antd";
+import { Avatar, Button, Card, Carousel } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 
 const { Meta } = Card;
@@ -8,7 +8,7 @@ interface PostProps {
   small?: boolean;
   title?: string;
   imageUrls?: string[];
-  voteSum: number;
+  voteSum?: number;
   selfVote?: "up" | "down";
   voting?: boolean;
   onUpvote?: () => void;
@@ -51,7 +51,7 @@ const Post: React.FC<PostProps> = ({
   small = false,
   title,
   imageUrls = [],
-  voteSum,
+  voteSum = 0,
   voting,
   selfVote,
   status,
