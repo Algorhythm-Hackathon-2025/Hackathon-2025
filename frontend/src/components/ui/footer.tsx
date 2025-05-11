@@ -28,7 +28,7 @@ const Footer = ({
     title: "AlgoRythm team",
     url: "facebook.com",
   },
-  tagline = "Components made easy.",
+  tagline = "BaatarBeam",
   menuItems = [
     {
       title: "Product",

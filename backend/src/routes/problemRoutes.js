@@ -36,5 +36,5 @@ router.get("/user", protect, getUserProblems);
 router.delete("/delete/:id", protect, deleteProblem);
 router.get("/voteCount/:id", protect, getVoteCount);
 router.post("/take/:id", protect, takeEasyProblem);
-router.put("/:id/status", protect, admin, updateProblemStatus);
+router.put("/update/:id", protect, updateProblemStatus);
 export default router;
