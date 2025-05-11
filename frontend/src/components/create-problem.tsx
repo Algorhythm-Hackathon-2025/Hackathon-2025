@@ -35,16 +35,18 @@ export default function CreateProblem() {
         (file) => file.size <= MAX_FILE_SIZE
       );
       if (validFiles.length !== acceptedFiles.length) {
-        setErrorMessage(`Some files exceed the 5MB limit and were not added.`);
+        setErrorMessage(
+          `Зарим файлууд 5MB-ийг давсан хэмжээтэй тул оруулсангүй.`
+        );
         if (validFiles.length === 0) return;
       }
 
       // Check max number of files
       if (images.length + validFiles.length > MAX_FILES) {
         setErrorMessage(
-          `You can upload maximum ${MAX_FILES} images. Only the first ${
+          `Хамгийн ихдээ ${MAX_FILES} зураг оруулах боломжтой. Зөвхөн эхний ${
             MAX_FILES - images.length
-          } will be added.`
+          } зурагнууд л орсон.`
         );
         validFiles = validFiles.slice(0, MAX_FILES - images.length);
         if (validFiles.length === 0) return;
@@ -67,6 +69,9 @@ export default function CreateProblem() {
 
   const removeImage = (index: number) => {
     URL.revokeObjectURL(images[index].url);
+    if (index - 1 >= images.length) {
+      setCurrentImageIndex(index - 1);
+    }
     setImages(images.filter((_, i) => i !== index));
   };
 
@@ -84,41 +89,41 @@ export default function CreateProblem() {
         },
         (error) => {
           console.error("Error fetching location:", error);
-          setErrorMessage(
-            "Unable to fetch location. Please try again or enter manually."
-          );
+          setErrorMessage("Байршлаа авах боломжгүй байна.");
           setGeoLoading(false);
         }
       );
     } else {
-      setErrorMessage("Geolocation is not supported by your browser.");
+      setErrorMessage(
+        "Таны броузер GPS-ийг дэмждэггүй тул байршил авах боломжгүй."
+      );
     }
   };
 
   const handleSubmit = async () => {
     // Validation
     if (images.length === 0) {
-      setErrorMessage("Please upload at least one image.");
+      setErrorMessage("Дор хаяж нэг зураг оруулна уу.");
       return;
     }
 
     if (!caption.trim()) {
-      setErrorMessage("Please provide a title for the problem.");
+      setErrorMessage("Асуудлаа тайлбарлаж бичнэ үү.");
       return;
     }
 
     if (!location) {
-      setErrorMessage("Please add your location.");
+      setErrorMessage("Байршлаа нэмнэ үү.");
       return;
     }
 
     if (!category) {
-      setErrorMessage("Please select a category.");
+      setErrorMessage("Төрлөө сонгоно уу.");
       return;
     }
 
     if (!difficulty) {
-      setErrorMessage("Please select a difficulty level.");
+      setErrorMessage("Хэнээр шийдвэрлүүлэхээ сонгоно уу.");
       return;
     }
 
@@ -175,9 +180,9 @@ export default function CreateProblem() {
   };
 
   return (
-    <div className="flex-grow flex items-center">
+    <div className="w-full h-full flex items-center justify-center">
       <Card>
-        <Typography.Title level={3}>Report a problem</Typography.Title>
+        <Typography.Title level={3}>Асуудал мэдээллэх</Typography.Title>
 
         <div className="flex flex-col gap-4">
           {/* Image Upload Area */}
@@ -192,11 +197,11 @@ export default function CreateProblem() {
               <Camera className="w-8 h-8 text-gray-400 mb-2" />
               <p className="text-sm text-gray-500">
                 {isDragActive
-                  ? "Drop the images here..."
-                  : "Drag & drop images here, or click to select"}
+                  ? "Зургаа энд унагана уу..."
+                  : "Зургаа зөөж авчирна уу, эсвэл дараад зургаа сонгоно уу"}
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                Max 5 images, 5MB each
+                Хамгийн ихдээ 5 зураг, тус бүр нь 5MB-аас хэтрэхгүй
               </p>
             </div>
           </div>
@@ -262,41 +267,41 @@ export default function CreateProblem() {
           )}
 
           <div>
-            <label htmlFor="category">Category</label>
+            <label htmlFor="category">Төрөл</label>
             <Select
               id="category"
               className="w-full"
               onChange={setCategory}
-              placeholder="Select Category"
+              placeholder="Төрөл"
               options={[
-                { value: "pothole", label: "Pothole" },
-                { value: "streetlight", label: "Street Light Issue" },
-                { value: "trash", label: "Trash" },
-                { value: "sidewalk", label: "Damaged Sidewalk" },
-                { value: "other", label: "Others" },
+                { value: "pothole", label: "Нүх" },
+                { value: "streetlight", label: "Гудамжны гэрлийн асуудал" },
+                { value: "trash", label: "Хог хаягдал" },
+                { value: "sidewalk", label: "Гэмтсэн зам" },
+                { value: "other", label: "Бусад" },
               ]}
             />
           </div>
           <div>
-            <label htmlFor="difficulty">Difficulty</label>
+            <label htmlFor="difficulty">Хэн шийдэж чадах вэ?</label>
             <Select
               id="difficulty"
               className="w-full"
               onChange={setDifficulty}
-              placeholder="Select Difficulty"
+              placeholder="Шийдвэрлэх нэгж"
               options={[
-                { value: "easy", label: "Easy" },
-                { value: "hard", label: "Hard" },
+                { value: "easy", label: "Ард иргэд" },
+                { value: "hard", label: "Улсын байгууллагууд" },
               ]}
             />
           </div>
           <div>
-            <label htmlFor="description">Description</label>
+            <label htmlFor="description">Нэмэлт мэдээлэл</label>
             <Input.TextArea
               id="description"
               value={caption}
               onChange={(e) => setCaption(e.currentTarget.value)}
-              placeholder="Describe the problem..."
+              placeholder="Асуудлаа тайлбарлана уу..."
               className="w-full p-2"
               rows={3}
             />
@@ -311,7 +316,7 @@ export default function CreateProblem() {
               type="primary"
               size="large"
             >
-              {location ? "Location Added" : "Add Current Location"}
+              {location ? "Байршил нэмэгдлээ" : "Одоо байгаа байршлаа нэмэх"}
             </Button>
             {location && (
               <p className="text-xs text-gray-500 mt-1 text-center">
@@ -334,7 +339,7 @@ export default function CreateProblem() {
             size="large"
             icon={<Send size={20} />}
           >
-            {isSubmitting ? "Submitting..." : "Submit Report"}
+            {isSubmitting ? "Илгээгдэж байна..." : "Мэдээлэл илгээх"}
           </Button>
         </div>
       </Card>
