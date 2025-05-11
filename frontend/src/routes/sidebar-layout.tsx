@@ -17,7 +17,6 @@ const SIDE_MENU_ITEMS: MenuProps["items"] = [
   { key: "/jobs", icon: <ShopOutlined />, label: "Ажлын зар" },
   { key: "/profile", icon: <UserOutlined />, label: "Профайл" },
   { key: "/map", icon: <HeatMapOutlined />, label: "Газрын зураг" },
-  { key: "/logout", icon: <LogoutOutlined />, label: "Гарах" },
 ];
 
 export default function SidebarLayout() {
@@ -26,7 +25,6 @@ export default function SidebarLayout() {
 
   return (
     <div className="flex flex-1 overflow-hidden">
-      {/* Left Sidebar */}
       {user && (
         <div className="w-64 bg-[#23252d] h-full overflow-y-auto">
           <Menu
