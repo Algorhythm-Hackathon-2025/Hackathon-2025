@@ -4,10 +4,12 @@ import {
   UploadOutlined,
   ClockCircleOutlined,
 } from "@ant-design/icons";
-import { Menu, type MenuProps } from "antd";
+import { Menu, Spin, type MenuProps } from "antd";
 import { useUser } from "../providers/user-provider";
 import { Outlet, useNavigate } from "react-router";
 import { Post } from "../components/ui/post";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const SIDE_MENU_ITEMS: MenuProps["items"] = [
   { key: "/report", icon: <UploadOutlined />, label: "Асуудал мэдээллэх" },
@@ -16,9 +18,37 @@ const SIDE_MENU_ITEMS: MenuProps["items"] = [
   { key: "/about", icon: <ClockCircleOutlined />, label: "Сүүлийн үеийн асуудлууд" },
 ];
 
+interface Problem {
+  _id: string;
+  title: string;
+  images: string[];
+  voteSum: number;
+  selfVote?: "up" | "down";
+  status?: "pending" | "accepted" | "rejected" | "done";
+}
+
 export default function SidebarLayout() {
   const { user } = useUser();
   const navigate = useNavigate();
+
+  const [donePosts, setDonePosts] = useState<Problem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDonePosts = async () => {
+      try {
+        const res = await axios.get("/api/problems/get");
+        const filtered = res.data.filter((p: Problem) => p.status === "done");
+        setDonePosts(filtered);
+      } catch (err) {
+        console.error("Failed to fetch done problems:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDonePosts();
+  }, []);
 
   return (
     <div className="flex flex-1 overflow-hidden">
@@ -39,15 +69,29 @@ export default function SidebarLayout() {
         <Outlet />
       </div>
 
-      {/* Right Sidebar (only on home + user logged in) */}
+      {/* Right Sidebar */}
       {user && (
         <div className="w-80 bg-[#1f1f1f] text-white h-full overflow-y-auto border-l border-gray-800 p-4 hidden lg:block">
           <h2 className="text-xl font-semibold mb-10">Шийдэгдсэн асуудлууд</h2>
-          <div className="flex flex-col gap-4">
-            {[1, 2, 3].map((id) => (
-              <Post key={id} small voteSum={0} />
-            ))}
-          </div>
+          {loading ? (
+            <Spin />
+          ) : (
+            <div className="flex flex-col gap-4">
+              {donePosts.map((post) => (
+                <Post
+                  key={post._id}
+                  title={post.title}
+                  voteSum={post.voteSum}
+                  selfVote={post.selfVote}
+                  imageUrls={post.images.map(
+                    (img) => `/api/${img.replace(/\\/g, "/")}`
+                  )}
+                  status={post.status}
+                  small
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
