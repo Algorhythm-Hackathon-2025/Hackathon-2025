@@ -13,6 +13,8 @@ const Register = lazy(() => import("./routes/register"));
 const Map = lazy(() => import("./routes/map"));
 const Profile = lazy(() => import("./routes/profile"));
 const Jobs = lazy(() => import("./routes/jobs"));
+const Report = lazy(() => import("./routes/report"));
+
 
 
 const AdminHome = lazy(() => import("./routes/admin/Home"));
@@ -38,6 +40,7 @@ function App() {
             <Route path="/map" element={<Map />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/jobs" element={<Jobs />} />
+              <Route path="/report" element={<Report />} />
           </>
         ) : (
           <>
