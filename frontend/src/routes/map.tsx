@@ -9,32 +9,32 @@ const MapComponent: React.FC = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<L.Map | null>(null);
 
-  const icons = {
-    Streetlight: L.icon({
+  const icons: { [k: string]: L.Icon } = {
+    streetlight: L.icon({
       iconUrl: "/customIcon/bulb.png",
       iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
-    Pothole: L.icon({
+    pothole: L.icon({
       iconUrl: "/customIcon/pothole.png",
       iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
-    Sidewalk: L.icon({
+    sidewalk: L.icon({
       iconUrl: "/customIcon/sidewalk.png",
       iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
-    Trash: L.icon({
+    trash: L.icon({
       iconUrl: "/customIcon/waste.png",
       iconSize: [32, 32],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
     }),
-    Others: L.icon({
+    others: L.icon({
       iconUrl: "/customIcon/others.png",
       iconSize: [32, 32],
       iconAnchor: [12, 41],
@@ -60,27 +60,28 @@ const MapComponent: React.FC = () => {
           const { coordinates, categories, title, images } = problem;
 
           if (coordinates && coordinates.length === 2) {
-            const icon =
-              icons[categories as keyof typeof icons] || icons.Others;
+            const icon = icons[categories as string] || icons.others;
+
+            console.log(JSON.stringify(icon) + "sda");
 
             const marker = L.marker([coordinates[0], coordinates[1]], {
               icon,
             }).addTo(map);
 
-            // Create a div container for the popup content
+            console.log(
+              `Marker added at: ${coordinates[0]}, ${coordinates[1]} with icon: ${icon.options.iconUrl}`
+            );
+
             const popupDiv = document.createElement("div");
             popupDiv.style.width = "210px";
             popupDiv.style.padding = "8px";
             marker.bindPopup(popupDiv);
 
-            // When the popup is opened, render the ImageSlider into the container
             marker.on("popupopen", () => {
-              // Normalize image paths (convert backslashes to forward slashes and prefix with uploads folder)
               const normalizedImages = (images || []).map(
-                (img: string) => `/api/uploads/${img.replace(/\\/g, "/")}`
+                (img: string) => `/api/${img.replace(/\\/g, "/")}`
               );
 
-              // Render React component only if not already rendered
               if (!popupDiv.hasChildNodes()) {
                 // React component render to popupDiv
                 // ReactDOM.render(
