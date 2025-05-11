@@ -1,10 +1,7 @@
 import {
-  AppstoreOutlined,
   HeatMapOutlined,
-  LogoutOutlined,
   ShopOutlined,
   UploadOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import { Menu, type MenuProps } from "antd";
 import { useUser } from "../providers/user-provider";
@@ -47,7 +44,7 @@ export default function SidebarLayout() {
           <h2 className="text-xl font-semibold mb-10">Шийдэгдсэн асуудлууд</h2>
           <div className="flex flex-col gap-4">
             {[1, 2, 3].map((id) => (
-              <Post key={id} small />
+              <Post key={id} small voteSum={0} />
             ))}
           </div>
         </div>

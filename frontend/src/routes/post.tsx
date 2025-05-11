@@ -35,7 +35,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center bg-[#23252d] min-h-screen text-white p-6">
-      <h1 className="text-3xl font-bold mb-6">Recent Reports</h1>
+      <h1 className="text-3xl font-bold mb-6">Сүүлийн үеийн асуудал</h1>
       <div className="flex flex-wrap justify-center gap-6">
         {problems?.map((problem) => {
           const imageUrls = (problem.images || []).map(

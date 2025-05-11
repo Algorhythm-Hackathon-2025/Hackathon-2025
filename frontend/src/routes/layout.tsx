@@ -31,11 +31,6 @@ export default function PageLayout() {
 
   const profileItems = user && [
     {
-      key: "/profile",
-      label: "Профайл",
-      onClick: () => navigate("/profile"),
-    },
-    {
       key: "/logout",
       label: "Гарах",
       onClick: async () => {
