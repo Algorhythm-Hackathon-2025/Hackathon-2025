@@ -1,8 +1,7 @@
 import { Timeline } from "../components/ui/works";
-import Impact from "../components/ui/recent";
 import { Footer } from "../components/ui/footer";
-import { Status } from "../components/ui/status";
 import { Hero } from "../components/ui/hero";
+
 export default function Home() {
   return (
     <>
