@@ -10,6 +10,7 @@ interface DataType {
   voteCount: number;
   images?: string[];
   loading?: boolean;
+  difficulty: string;
 }
 
 const PAGE_SIZE = 7;
@@ -33,10 +34,11 @@ const App: React.FC = () => {
       const pagedData = filteredSorted.slice(0, pageNumber * PAGE_SIZE);
 
       // Normalize image URLs for each item
-      const normalizedData = pagedData.map((item) => ({
+      const normalizedData = pagedData.map((item: any) => ({
         ...item,
         images: (item.images || []).map(
-          (img) => `/api/uploads/${img.replace(/\\/g, "/").split("/").pop()}`
+          (img: any) =>
+            `/api/uploads/${img.replace(/\\/g, "/").split("/").pop()}`
         ),
       }));
 
