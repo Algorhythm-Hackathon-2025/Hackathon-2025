@@ -13,16 +13,16 @@ export default function Home() {
             <Timeline />
           </div>
 
-          <div className="px-36">
+          {/* <div className="px-36">
             <Status />
-          </div>
+          </div> */}
 
-          <h1 className="text-4xl text-gray-200 font-serif m-5 text-center">
+          {/* <h1 className="text-4xl text-gray-200 font-serif m-5 text-center">
             Бидний хийсэн ажилуудаас
           </h1>
           <div>
             <Impact />
-          </div>
+          </div> */}
 
           <Footer />
         </div>
