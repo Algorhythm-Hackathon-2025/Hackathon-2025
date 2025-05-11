@@ -25,7 +25,6 @@ export default function SidebarLayout() {
 
   return (
     <div className="flex flex-1 overflow-hidden">
-      {/* Left Sidebar */}
       {user && (
         <div className="w-64 bg-[#23252d] h-full overflow-y-auto">
           <Menu
