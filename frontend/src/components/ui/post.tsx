@@ -1,7 +1,6 @@
 import React from "react";
-import { Avatar, Button, Card, Carousel, Tooltip } from "antd";
+import { Avatar, Button, Card, Carousel } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
-import { CheckCircle, XCircle, Loader2, ClipboardCheck } from "lucide-react";
 
 const { Meta } = Card;
 
@@ -9,7 +8,7 @@ interface PostProps {
   small?: boolean;
   title?: string;
   imageUrls?: string[];
-  voteSum: number;
+  voteSum?: number;
   selfVote?: "up" | "down";
   voting?: boolean;
   onUpvote?: () => void;
@@ -17,33 +16,29 @@ interface PostProps {
   status?: "pending" | "accepted" | "rejected" | "done";
 }
 
-const getStatusIcon = (status: PostProps["status"]) => {
+const getStatusText = (status: PostProps["status"]) => {
   switch (status) {
     case "pending":
       return (
-        <div className="flex items-center gap-1 text-yellow-500 text-sm">
-          <Loader2 className="w-4 h-4 animate-spin" />
+        <div className="flex items-center text-yellow-500 text-sm">
           <span>Pending</span>
         </div>
       );
     case "accepted":
       return (
-        <div className="flex items-center gap-1 text-blue-500 text-sm">
-          <ClipboardCheck className="w-4 h-4" />
+        <div className="flex items-center text-blue-500 text-sm">
           <span>Accepted</span>
         </div>
       );
     case "rejected":
       return (
-        <div className="flex items-center gap-1 text-red-500 text-sm">
-          <XCircle className="w-4 h-4" />
+        <div className="flex items-center text-red-500 text-sm">
           <span>Rejected</span>
         </div>
       );
     case "done":
       return (
-        <div className="flex items-center gap-1 text-green-600 text-sm">
-          <CheckCircle className="w-4 h-4" />
+        <div className="flex items-center text-green-600 text-sm">
           <span>Done</span>
         </div>
       );
@@ -56,7 +51,7 @@ const Post: React.FC<PostProps> = ({
   small = false,
   title,
   imageUrls = [],
-  voteSum,
+  voteSum = 0,
   voting,
   selfVote,
   status,
@@ -131,17 +126,7 @@ const Post: React.FC<PostProps> = ({
           }
           size="small"
         />
-        {status && (
-          <Tooltip title={status}>
-            <Button
-              key="status"
-              type="text"
-              icon={getStatusIcon(status)}
-              size="small"
-              className="mx-5"
-            />
-          </Tooltip>
-        )}
+        {status && <div key="status">{getStatusText(status)}</div>}
       </div>
     </Card>
   );
